@@ -3,6 +3,7 @@ import { registerSchema, verifyOtpSchema, loginSchema, forgotPasswordSchema, ver
 import { registerUser, verifyOtp, loginUser, refreshAccessToken, forgotPassword, resetPassword, verifyForgotOtp, resendOtp, googleLogin, getMe } from "./user.service.js";
 import { User } from "./user.schema.js";
 
+const isProduction = process.env.NODE_ENV === "production"
 export const registerController = async (req: Request, res: Response) => {
     try {
         const validation = registerSchema.safeParse(req.body)
@@ -43,14 +44,14 @@ export const verifyOtpController = async (req: Request, res: Response) => {
 
         res.cookie("refreshToken", generateRefreshToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: isProduction ,
+            sameSite: isProduction ? "none" : "lax",
             maxAge: 14 * 24 * 60 * 60 * 1000,
         })
         res.cookie("accessToken", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             maxAge: 15 * 60 * 1000
         })
         return res.status(201).json({
@@ -99,14 +100,14 @@ export const loginController = async (req: Request, res: Response) => {
 
         res.cookie("refreshToken", generateRefreshToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax" ,
             maxAge: 14 * 24 * 60 * 60 * 1000,
         })
         res.cookie("accessToken", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: isProduction ,
+            sameSite: isProduction ? "none" : "lax" ,
             maxAge: 15 * 60 * 1000
         })
         return res.status(200).json({
@@ -134,13 +135,13 @@ export const logoutController = async (req: Request, res: Response) => {
 
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
         });
         res.clearCookie("accessToken", {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict"
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax"
         })
         return res.status(200).json({
             success: true,
@@ -163,8 +164,8 @@ export const refreshTokenHandler = async (req: Request, res: Response) => {
         const { Token } = await refreshAccessToken(refreshToken)
         res.cookie("accessToken", Token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             maxAge: 15 * 60 * 1000
         })
         return res.status(200).json({
@@ -258,14 +259,14 @@ export const googleCallbackHandler = async (req: Request, res: Response) => {
 
         res.cookie("refreshToken", generateRefreshToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             maxAge: 14 * 24 * 60 * 60 * 1000,
         })
         res.cookie("accessToken", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "strict",
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
             maxAge: 15 * 60 * 1000
         })
         return res.redirect(
