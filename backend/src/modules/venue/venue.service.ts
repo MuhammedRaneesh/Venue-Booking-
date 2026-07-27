@@ -1,7 +1,7 @@
 import { VenueQuery, CreateVenue, UpdateVenue } from "./venue.validation.js"
 import { Venue } from "./venue.schema.js"
 import { OwnerProfile } from "../owner/owner.schema.js"
-
+import { AppError } from "../../utils/AppError.js"
 
 export const getAllVenues = async (data: VenueQuery) => {
 
@@ -98,24 +98,23 @@ export const getvenueById = async (venueId: string) => {
 
     const venue = await Venue.findById(venueId)
 
-    if (!venue) throw new Error("venue not found")
+    if (!venue) throw new AppError("venue not found", 404)
 
     if (venue.status !== "approved" || !venue.isActive) {
-        throw Error("Venue not found")
-
+        throw new AppError("Venue not found", 404)
     }
     return venue
 }
 export const createVenue = async (ownerId: string, data: CreateVenue, photo: string[]) => {
 
     const ownerProfile = await OwnerProfile.findOne({ user: ownerId })
-    if (!ownerProfile) throw new Error("Owner profile not found")
+    if (!ownerProfile) throw new AppError("Owner profile not found", 404)
     const existing = await Venue.findOne({
         owner: ownerId,
         venueName: { $regex: `^${data.venueName.trim()}$`, }
     })
 
-    if (existing) throw new Error("You already have a venue with this name")
+    if (existing) throw new AppError("You already have a venue with this name", 409)
 
     const venue = await Venue.create({
         ...data,
@@ -130,10 +129,10 @@ export const createVenue = async (ownerId: string, data: CreateVenue, photo: str
 export const updateVenue = async (venueId: string, data: UpdateVenue, ownerId: string, photo: string[]) => {
 
     const existingVenue = await Venue.findById(venueId)
-    if (!existingVenue) throw new Error("venue not found")
+    if (!existingVenue) throw new AppError("venue not found", 404)
 
     const ownerCheck = String(existingVenue.owner) === ownerId
-    if (!ownerCheck) throw new Error("You are not authorized to edit this venue ")
+    if (!ownerCheck) throw new AppError("You are not authorized to edit this venue", 403)
     const updateData: Record<string, any> = {
         ...data,
     }
@@ -149,7 +148,7 @@ export const updateVenue = async (venueId: string, data: UpdateVenue, ownerId: s
     if (finalPhotos.length > 0) {
         updateData.photos = finalPhotos;
     } else {
-        throw new Error("At least one photo is required");
+        throw new AppError("At least one photo is required", 400);
     }
 
     const updatedVenue = await Venue.findByIdAndUpdate(venueId, updateData, {
@@ -162,15 +161,15 @@ export const updateVenue = async (venueId: string, data: UpdateVenue, ownerId: s
 
 export const ownerVenue = async (venueId: string) => {
     const venue = await Venue.findById(venueId)
-    if (!venue) throw new Error("venue not found")
+    if (!venue) throw new AppError("venue not found", 404)
     return venue
 }
 
 export const ownerVenueDelete = async (venueId: string, ownerId: string) => {
-    const existing = await Venue.find({ _id: venueId, owner: ownerId })
+    const existing = await Venue.findOne({ _id: venueId, owner: ownerId })
 
     if (!existing) {
-        throw new Error("venue not found ")
+        throw new AppError("venue not found", 404)
     }
 
     const venue = await Venue.findByIdAndUpdate(venueId, {
@@ -178,5 +177,5 @@ export const ownerVenueDelete = async (venueId: string, ownerId: string) => {
     }, {
         returnDocument : "after",
     })
-    return { message: "delete done " }
+    return { message: "delete done" }
 }

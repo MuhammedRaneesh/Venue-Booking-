@@ -27,7 +27,6 @@ export const validateRequest = (schema: ZodSchema, source: "body" | "query" | "p
           field: err.path.join("."),
           message: err.message,
         }));
-      console.log(errors)
       return res.status(400).json({
         success: false,
         message: "Validation failed",
@@ -36,7 +35,7 @@ export const validateRequest = (schema: ZodSchema, source: "body" | "query" | "p
     }
 
     if (source === "body") {
-      req.validatedBody = result.data;
+      req.body = result.data;
     } else if (source === "query") {
       req.validatedQuery = result.data;
     } else if (source === "params") {

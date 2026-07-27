@@ -70,14 +70,11 @@ function MyBookingsPage() {
 
   const handleCancel = async (bookingId: string, bookingDate: string) => {
     const daysUntilEvent = (new Date(bookingDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-
     if (daysUntilEvent < 5) {
       toast.error("Cannot cancel within 5 days of the event")
       return
     }
-
     const reason = window.prompt("Please provide a cancellation reason:")
-    
     if (!reason) return
     try {
       setCancellingId(bookingId)

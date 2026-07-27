@@ -16,6 +16,7 @@ import userProfileRoutes from "./modules/userProfile/userProfile.routes.js"
 import useWishlist from "./modules/wishlist/wishlist.routes.js"
 import useAdminRoute from "./modules/Admin/admin.routes.js"
 import useNotification from "./modules/Notification/Notification.routes.js"
+import { errorHandler } from "./middleware/ErrorHandler.js";
 connectDb()
 const app = express()
 
@@ -36,6 +37,7 @@ app.use("/api/", useWishlist)
 app.use("/api/admin", useAdminRoute)
 app.use("/api/notification", useNotification)
 
+app.use(errorHandler)
 
 const httpServer = createServer(app)
 

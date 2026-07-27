@@ -1,83 +1,58 @@
 import { Request, Response } from "express"
 import { Wishlist } from "./wishlist.schema.js"
-export const addWishlist = async (req: Request, res: Response) => {
-    try {
+import { catchAsync } from "../../utils/catchAsync.js"
+import { AppError } from "../../utils/AppError.js"
 
-        const userId = req.user?._id!
-        const { venueId } = req.body;
+export const addWishlist = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?._id!
+    const { venueId } = req.body;
 
-        const existingWishlist = await Wishlist.findOne({
-            userId,
-            venueId,
-        });
+    const existingWishlist = await Wishlist.findOne({
+        userId,
+        venueId,
+    });
 
-        if (existingWishlist) {
-            return res.status(400).json({
-                success: false,
-                message: "Venue already exists in wishlist",
-            });
-        }
-
-        const result = await Wishlist.create({
-            userId,
-            venueId,
-        });
-
-        res.status(201).json({
-            success: true,
-            message: "wishlist is added"
-        })
-    } catch (error: any) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        })
+    if (existingWishlist) {
+        throw new AppError("Venue already exists in wishlist", 400);
     }
-}
 
-export const getWishlist = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user?._id;
+    const result = await Wishlist.create({
+        userId,
+        venueId,
+    });
 
-        const wishlist = await Wishlist.find({ userId, }).populate("venueId", "venueName category capacity pricing photos").sort({ createdAt: -1 }).lean();
+    res.status(201).json({
+        success: true,
+        message: "wishlist is added"
+    })
+})
 
-        return res.status(200).json({
-            success: true,
-            data: wishlist,
-        });
-    } catch (error: any) {
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        });
+export const getWishlist = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?._id;
+
+    const wishlist = await Wishlist.find({ userId, }).populate("venueId", "venueName category capacity pricing photos").sort({ createdAt: -1 }).lean();
+
+    res.status(200).json({
+        success: true,
+        data: wishlist,
+    });
+});
+
+export const removeWishlist = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?._id!;
+    const { venueId } = req.params;
+
+    const result = await Wishlist.findOneAndDelete({
+        userId,
+        venueId,
+    });
+
+    if (!result) {
+        throw new AppError("Venue not found in wishlist", 404);
     }
-};
 
-export const removeWishlist = async (req: Request, res: Response) => {
-    try {
-        const userId = req.user?._id!;
-        const { venueId } = req.params;
-
-        const result = await Wishlist.findOneAndDelete({
-            userId,
-            venueId,
-        });
-
-        if (!result) {
-            return res.status(404).json({
-                success: false,
-                message: "Venue not found in wishlist",
-            });
-        }
-
-        res.status(200).json({
-            success: true,
-            message: "Removed from wishlist"
-        });
-    } catch (error: any) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
-};
+    res.status(200).json({
+        success: true,
+        message: "Removed from wishlist"
+    });
+});

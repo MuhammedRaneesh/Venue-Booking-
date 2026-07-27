@@ -4,6 +4,8 @@ import { Venue } from "../venue/venue.schema.js";
 import { OwnerProfile } from "../owner/owner.schema.js";
 import { AdminUserSchema, AdminGetAllVenue, AdminVenueStatus, AdminGetBookingsQuery, AdminGetOwnerApplicationsQuery, AdminOwnerApplicationAction, DashboardQuery } from "./admin.validation.js";
 import { createNotification } from "../Notification/Notification.service.js";
+import { AppError } from "../../utils/AppError.js";
+
 export const COMMISSION_RATE = 0.08;
 
 export const getDashboardSummary = async (period: 'this_month' | 'this_year' | 'all' = 'all') => {
@@ -190,7 +192,7 @@ export const toggleUserStatus = async (userId: string) => {
 
     const user = await User.findById(userId);
 
-    if (!user) throw new Error("user Not found");
+    if (!user) throw new AppError("user Not found", 404);
 
     user.isActive = !user.isActive
     await user.save()
@@ -245,7 +247,7 @@ export const adminGetAllVenues = async (data: AdminGetAllVenue) => {
 
 export const adminGetVenueDetail = async (venueId: string) => {
     const venue = await Venue.findById(venueId).populate("owner", "userName email profileImage phoneNumber")
-    if (!venue) throw new Error("venue not found")
+    if (!venue) throw new AppError("venue not found", 404)
     return { venue }
 }
 
@@ -253,11 +255,11 @@ export const adminUpdateVenueStatus = async (venueId: string, data: AdminVenueSt
     const { status, reason } = data
 
     const venue = await Venue.findById(venueId)
-    if (!venue) throw new Error("Venue not found")
+    if (!venue) throw new AppError("Venue not found", 404)
     const previousStatus = venue.status
 
     if (status === 'rejected' && !reason) {
-        throw new Error("Rejection reason is required")
+        throw new AppError("Rejection reason is required", 400)
     }
 
     venue.status = status
@@ -285,7 +287,7 @@ export const adminUpdateVenueStatus = async (venueId: string, data: AdminVenueSt
 
 export const AdminToggleStatus = async (venueId: string) => {
     const venue = await Venue.findById(venueId)
-    if (!venue) throw new Error('Venue not found')
+    if (!venue) throw new AppError('Venue not found', 404)
 
     venue.isActive = !venue.isActive
     await venue.save()
@@ -383,7 +385,7 @@ export const adminGetOwnerApplicationDetail = async (userId: string) => {
     const ownerProfile = await OwnerProfile.findOne({ user: userId })
         .populate('user', 'userName email profileImage ownerStatus role createdAt')
 
-    if (!ownerProfile) throw new Error('Application not found')
+    if (!ownerProfile) throw new AppError('Application not found', 404)
 
     return { application: ownerProfile }
 }
@@ -392,10 +394,10 @@ export const adminUpdateOwnerApplicationStatus = async (userId: string, data: Ad
     const { action, rejectionReason } = data
 
     const user = await User.findById(userId)
-    if (!user) throw new Error('User not found')
+    if (!user) throw new AppError('User not found', 404)
 
     const ownerProfile = await OwnerProfile.findOne({ user: userId })
-    if (!ownerProfile) throw new Error('Owner application not found')
+    if (!ownerProfile) throw new AppError('Owner application not found', 404)
 
     if (action === 'APPROVED') {
         user.ownerStatus = 'APPROVED'

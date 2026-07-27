@@ -1,12 +1,13 @@
 import { Notification } from "./Notification.Schema.js"
 import { createNotificationType } from "./Notification.type.js"
 import { getIo } from "../../Socket/socket.js"
+import { AppError } from "../../utils/AppError.js"
 
 export const createNotification = async ({ userId, senderId, type, title, message, data = {}, }: createNotificationType) => {
-    if (!userId) throw new Error("User Id is required")
-    if (!type) throw new Error("Notification type is required")
-    if (!title.trim()) throw new Error("title is required")
-    if (!message.trim()) throw new Error("message is required")
+    if (!userId) throw new AppError("User Id is required", 400)
+    if (!type) throw new AppError("Notification type is required", 400)
+    if (!title.trim()) throw new AppError("title is required", 400)
+    if (!message.trim()) throw new AppError("message is required", 400)
 
     const notification = await Notification.create({
         userId,
@@ -40,7 +41,7 @@ export const createNotificationsForUsers = async (userIds: string[], notificatio
 
 export const getAllnotification = async (userId: string) => {
     const notifiction = await Notification.find({ userId }).sort({ createdAt: -1 })
-    if (!notifiction) throw new Error("no notification")
+    if (!notifiction) throw new AppError("No notifications found", 404)
     return notifiction
 }
 
@@ -48,7 +49,7 @@ export const readOneNotification = async (notificationId: string, userId: string
 
     const notification = await Notification.findOne({ _id: notificationId, userId })
 
-    if (!notification) throw new Error("not found the notification")
+    if (!notification) throw new AppError("Notification not found", 404)
 
     notification.isRead = true
     notification.readAt = new Date()
@@ -69,7 +70,7 @@ export const readAllNotification = async (userId: string) => {
 
 export const deleteOneNotification = async (notificationId: string, userId: string) => {
     const notification = await Notification.findOneAndDelete({ _id: notificationId, userId })
-    if (!notification) throw new Error("Notification not found")
+    if (!notification) throw new AppError("Notification not found", 404)
     return notification
 }
 

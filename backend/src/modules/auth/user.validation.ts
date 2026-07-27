@@ -32,10 +32,8 @@ export const loginSchema = z.object({
 });
 
 
-export const forgotPasswordSchema = z.object({
-    email: z.string()
-        .email("Invalid email format")
-        .regex(strictEmailRegex, "Invalid email")
+export const resetOtpSchema = z.object({
+    email: z.string().email("Invalid email format").regex(strictEmailRegex, "Invalid email")
 })
 
 export const verifyForgotOtpSchema = z.object({
@@ -52,9 +50,10 @@ export const resetPasswordSchema = z.object({
     newPassword: z.string().min(8)
 })
 
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type VerifyOtpInput = z.infer<typeof verifyOtpSchema>
 export type LoginInput = z.infer<typeof loginSchema>
-export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
+export type ForgotPasswordInput = z.infer<typeof resetOtpSchema>
 export type VerifyForgotOtpInput = z.infer<typeof verifyForgotOtpSchema>
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>

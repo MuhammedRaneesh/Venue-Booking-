@@ -6,16 +6,17 @@ import { Venue } from "../venue/venue.schema.js"
 import { Booking } from "../booking/booking.schema.js"
 import { createNotification, createNotificationsForUsers } from "../Notification/Notification.service.js"
 import type { NotificationType } from "../Notification/Notification.type.js"
+import { AppError } from "../../utils/AppError.js"
 
 export const ownerOnboarding = async (userId: string, data: OwnerApplicationSchema) => {
 
     const user = await User.findById(userId).select(" ownerStatus email userName")
-    if (!user) throw new Error("user not found")
+    if (!user) throw new AppError("user not found", 404)
     if (user.ownerStatus === "PENDING") {
-        throw new Error("You already have a pending application under review")
+        throw new AppError("You already have a pending application under review", 409)
     }
     if (user.ownerStatus === 'APPROVED') {
-        throw new Error("Your application has already been approved")
+        throw new AppError("Your application has already been approved", 409)
     }
     if (user.ownerStatus === 'REJECTED') {
         await OwnerProfile.findOneAndDelete({ user: userId })
@@ -94,7 +95,7 @@ export const updateBookingStatus = async (userId: string, data: UpdateBookingSta
 
     const { bookingId, status } = data
     const booking = await Booking.findById(bookingId).populate("userId").populate("venueId", "venueName")
-    if (!booking) throw new Error("Booking not found")
+    if (!booking) throw new AppError("Booking not found", 404)
 
     const previousStatus = booking.bookingStatus;
     booking.bookingStatus = status
@@ -254,7 +255,7 @@ export const getDashboard = async (ownerId: string) => {
 export const getOwnerProfile = async (ownerId: string) => {
 
     const profile = await OwnerProfile.findOne({ user: ownerId }).populate("user", "userName email profileImage createdAt")
-    if (!profile) throw new Error("Owner profile not found")
+    if (!profile) throw new AppError("Owner profile not found", 404)
 
     return profile
 }
