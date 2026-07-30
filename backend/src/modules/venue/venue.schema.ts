@@ -104,21 +104,6 @@ const venueSchema = new Schema(
     },
 
     availability: {
-      workingDays: [
-        {
-          type: String,
-          enum: [
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday",
-          ],
-        },
-      ],
-
       openTime: {
         type: String,
         required: true,
@@ -129,34 +114,6 @@ const venueSchema = new Schema(
         required: true,
       },
     },
-
-    paymentPolicy: {
-      acceptsFullPayment: {
-        type: Boolean,
-        default: true,
-      },
-    },
-
-    bookingSettings: {
-      minimumBookingHours: {
-        type: Number,
-        default: 1,
-      },
-
-      maximumBookingDaysInAdvance: {
-        type: Number,
-        default: 365,
-      },
-
-      autoApproveBookings: {
-        type: Boolean,
-        default: false,
-      },
-    },
-
-
-
-
     status: {
       type: String,
       enum: ["pending", "approved", "rejected", "suspended"],
