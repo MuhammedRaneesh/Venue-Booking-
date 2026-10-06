@@ -1,7 +1,7 @@
 // this is for the type checking 
 
 export interface IUser {
-    userName: string
+    fullName: string
     email: string
     password?: string
     googleId?: string

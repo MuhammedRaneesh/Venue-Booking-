@@ -8,8 +8,11 @@ import { accessToken, refreshToken } from "../../utils/tokenGenerating.js"
 import Jwt from "jsonwebtoken"
 import { AppError } from "../../utils/AppError.js"
 
+
 export const registerUser = async (userData: RegisterInput) => {
+
     const existingUser = await User.findOne({ email: userData.email })
+
     if (existingUser) {
         throw new AppError("User already exists", 409)
     }
@@ -22,6 +25,7 @@ export const registerUser = async (userData: RegisterInput) => {
     await sendOtpEmail(userData.email, otp)
     return { message: "OTP sent to your email. Please verify." }
 }
+
 
 export const verifyOtp = async (email: string, otpNumber: string) => {
     const redisKey = `otp:register:${email}`;
@@ -42,11 +46,11 @@ export const verifyOtp = async (email: string, otpNumber: string) => {
 
     user.refreshToken = generateRefreshToken
     await user.save()
-    sendWelcomeEmail(user.email, user.userName)
+    sendWelcomeEmail(user.email, user.fullName)
     return {
         user: {
             id: user._id,
-            userName: user.userName,
+            fullName: user.fullName,
             email: user.email,
             role: user.role
         },
@@ -56,13 +60,21 @@ export const verifyOtp = async (email: string, otpNumber: string) => {
 }
 
 export const resendOtp = async (email: string) => {
+
     const existing = await redisClient.get(`otp:register:${email}`)
+
     if (!existing) throw new AppError("Session expired. Please register again.", 401)
+
     const { userData } = JSON.parse(existing)
+
     await redisClient.del(`otp:register:${email}`)
+
     const otp = generateOtp()
+
     await redisClient.setEx(`otp:register:${email}`, 600, JSON.stringify({ otp, userData }))
+
     await sendOtpEmail(email, otp)
+
     return { message: "New OTP sent to your email." }
 }
 
@@ -87,11 +99,11 @@ export const loginUser = async (email: string, password: string) => {
 
     user.refreshToken = generateRefreshToken
     await user.save()
-    sendWelcomeEmail(user.email, user.userName)
+    sendWelcomeEmail(user.email, user.fullName)
     return {
         user: {
             id: user._id,
-            userName: user.userName,
+            userName: user.fullName,
             email: user.email,
             role: user.role
         },

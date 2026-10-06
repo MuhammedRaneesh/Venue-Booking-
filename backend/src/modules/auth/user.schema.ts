@@ -2,7 +2,7 @@ import { model, Schema } from "mongoose"
 import { IUser } from "./user.model.js"
 
 const userSchema = new Schema<IUser>({
-    userName: {
+    fullName: {
         type: String,
         required: true,
         trim: true

@@ -7,9 +7,11 @@ import passport from "passport";
 const router = express.Router()
 
 // register 
+
 router.post("/register",validateRequest(registerSchema , "body") ,registerController)
 router.post("/otp-verify",validateRequest(verifyOtpSchema , "body")  , verifyOtpController)
 router.post("/resend-otp",validateRequest(resetOtpSchema , "body"), resendOtpController )
+
 // login 
 router.post("/login",validateRequest(loginSchema , "body") , loginController)
 router.post("/logout", logoutController)
@@ -29,4 +31,5 @@ router.get("/me", protect, getMeHandler)
 
 // user logout 
 router.delete("/logout", logoutController)
+
 export default router

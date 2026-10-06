@@ -4,12 +4,11 @@ import {  z } from "zod";
 const strictEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|in|org|net|edu|co)$/;
 
 export const registerSchema = z.object({
-    userName: z.string().min(3, "Username must be at least 3 characters").max(20, "Username cannot exceed 20 characters"), 
+    fullName: z.string().min(3, "Username must be at least 3 characters").max(20, "Username cannot exceed 20 characters"), 
     email: z.string()
         .email("Invalid email format")
         .regex(strictEmailRegex, "Email must end with a valid domain extension like .com, .in, or .org"),
     password: z.string().min(6, "Password must be at least 6 characters"),
-    role: z.enum(['user', 'venue_owner', 'admin']).default("user"),
     phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number format").optional() 
 });
 
