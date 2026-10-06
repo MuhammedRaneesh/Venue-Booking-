@@ -3,7 +3,7 @@ import type {
   RegisterFormData, RegisterResponse, VerifyOtpResponse, ResendOtpResponse, LoginFormData, LoginResponse, ForgotPasswordFormData, ForgotPasswordResponse, ForgotPasswordOtpResponse,
   ResetPasswordResponse,
   User,
-} from "../features/auth/types/auth.types";
+} from "./types/auth.types";
 
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({

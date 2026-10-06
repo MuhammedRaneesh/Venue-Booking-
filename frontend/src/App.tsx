@@ -39,6 +39,7 @@ const VenueManagement = lazy(() => import("./features/admin/pages/VenueManagemen
 const Application = lazy(() => import("./features/admin/pages/Application"))
 const BookingManagement = lazy(() => import("./features/admin/pages/BookingManagement"))
 const UserManagement = lazy(() => import("./features/admin/pages/UserManagement"))
+const AdminCategoriesPage = lazy(() => import("./features/admin/pages/AdminCategoriesPage"))
 
 function App() {
   return (
@@ -84,6 +85,7 @@ function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<DashboardOverview />} />
               <Route path="users" element={<UserManagement />} />
+              <Route path="categories" element={<AdminCategoriesPage />} />
               <Route path="venues" element={<VenueManagement />} />
               <Route path="applications" element={<Application />} />
               <Route path="bookings" element={<BookingManagement />} />

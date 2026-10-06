@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useAuthmeQuery } from "@/api/authApi";
+import { useAuthmeQuery } from "@/features/auth/authApi";
 import { setCredentials, logout } from "../slices/authSlice";
 import { socket } from "@/services/socket";
 

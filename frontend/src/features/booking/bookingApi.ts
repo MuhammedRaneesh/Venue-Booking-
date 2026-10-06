@@ -1,4 +1,4 @@
-import { api } from "./baseApi"
+import { api } from "@/api/baseApi"
 import { AvailabilityParams, AvailabilityResponse , CreateBookingPayload , AddBookingResponse  , CreatePaymentOrderPayload , CreatePaymentOrderResponse , VerifyPaymentPayload , VerifyPaymentResponse} from "@/features/booking/types/booking.type"
 const BookingApi = api.injectEndpoints({
     endpoints: (builder) => ({

@@ -1,5 +1,5 @@
 import { api } from "@/api/baseApi";
-import { UpdateUserProfileResponse , GetUserProfileResponse } from "../features/auth/types/auth.types";
+import { UpdateUserProfileResponse , GetUserProfileResponse } from "./types/auth.types";
 
 export const userProfileApi = api.injectEndpoints({
   endpoints: (builder) => ({

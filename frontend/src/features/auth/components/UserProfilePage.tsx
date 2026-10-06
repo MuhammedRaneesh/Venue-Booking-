@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useGetUserProfileQuery, useUpdateUserProfileMutation } from "@/api/userProfileApi";
+import { useGetUserProfileQuery, useUpdateUserProfileMutation } from "@/features/auth/userProfileApi";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";

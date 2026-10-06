@@ -7,7 +7,7 @@ import { Booking } from "../booking/booking.schema.js"
 import { createNotification, createNotificationsForUsers } from "../Notification/Notification.service.js"
 import type { NotificationType } from "../Notification/Notification.type.js"
 import { AppError } from "../../utils/AppError.js"
-
+import mongoose from "mongoose"
 export const ownerOnboarding = async (userId: string, data: OwnerApplicationSchema) => {
 
     const user = await User.findById(userId).select(" ownerStatus email userName")
@@ -225,7 +225,7 @@ export const getDashboard = async (ownerId: string) => {
     const totalBookings = bookings.length;
     const pendingBookings = bookings.filter((b) => b.bookingStatus === "pending").length;
 
-    const totalEarningsRaw = bookings.filter((b) => ["advance_paid", "fully_paid"].includes(b.paymentStatus)).reduce((sum, b) => sum + (b.amountPaid || 0), 0);
+    const totalEarningsRaw = bookings.filter((b) => b.paymentStatus !== "unpaid" && b.paymentStatus !== "refunded").reduce((sum, b) => sum + (b.amountPaid || 0), 0)
     const totalEarnings = Number((totalEarningsRaw * ((100 - 8) / 100)).toFixed(2));
     const recentBookings = bookings.slice(0, 5).map((b: any) => ({
         _id: b._id,
@@ -259,3 +259,53 @@ export const getOwnerProfile = async (ownerId: string) => {
 
     return profile
 }
+
+
+type ChartPeriod = "month" | "year" | "all";
+
+export const getDashboardChart = async (ownerId: string, period: ChartPeriod = "month") => {
+    const ownerObjectId = new mongoose.Types.ObjectId(ownerId);
+
+    let dateFormat: string;
+    const matchStage: Record<string, any> = { ownerId: ownerObjectId };
+
+    if (period === "month") {
+        dateFormat = "%Y-%m-%d"; // daily buckets
+        const from = new Date();
+        from.setDate(from.getDate() - 30);
+        matchStage.createdAt = { $gte: from };
+    } else if (period === "year") {
+        dateFormat = "%Y-%m"; // monthly buckets
+        const from = new Date();
+        from.setMonth(from.getMonth() - 12);
+        matchStage.createdAt = { $gte: from };
+    } else {
+        dateFormat = "%Y-%m"; // monthly buckets, no lower bound â€” full history
+    }
+
+    const results = await Booking.aggregate([
+        { $match: matchStage },
+        {
+            $group: {
+                _id: { $dateToString: { format: dateFormat, date: "$createdAt" } },
+                bookingsCount: { $sum: 1 },
+                earningsRaw: {
+                    $sum: {
+                        $cond: [
+                            { $in: ["$paymentStatus", ["advance_paid", "fully_paid"]] },
+                            "$amountPaid",
+                            0,
+                        ],
+                    },
+                },
+            },
+        },
+        { $sort: { _id: 1 } },
+    ]);
+
+    return results.map((r) => ({
+        date: r._id,
+        bookings: r.bookingsCount,
+        earnings: Number((r.earningsRaw * ((100 - 8) / 100)).toFixed(2)),
+    }));
+};

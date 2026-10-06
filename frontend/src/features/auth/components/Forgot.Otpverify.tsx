@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom"
-import { useVerifyForgotOtpMutation } from "@/api/authApi"
+import { useVerifyForgotOtpMutation } from "@/features/auth/authApi"
 import { useForm } from "react-hook-form"
 import { ForgotOtpSchema, forgotOtpSchema } from "../validators/authValidation"
 import { zodResolver } from "@hookform/resolvers/zod"

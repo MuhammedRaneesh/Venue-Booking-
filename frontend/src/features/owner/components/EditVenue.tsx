@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { useGetVenueByIdQuery, useUpdateVenueMutation } from "@/api/ownerApi";
+import { useGetVenueByIdQuery, useUpdateVenueMutation } from "@/features/owner/ownerApi";
 import { useVenueImages } from "@/hooks/useVenueImages";
 import { createVenueFormSchema } from "../validators/ownerValidation";
 import { Clock, Trash2, Upload, Users, X, Plus, Edit2 } from "lucide-react";

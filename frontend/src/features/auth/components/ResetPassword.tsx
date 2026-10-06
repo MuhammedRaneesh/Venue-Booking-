@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { useResetPasswordMutation } from "@/api/authApi";
+import { useResetPasswordMutation } from "@/features/auth/authApi";
 import { useForm } from "react-hook-form";
 import { resetPasswordSchema, type ResetPasswordSchemaZ } from "../validators/authValidation";
 import { zodResolver } from "@hookform/resolvers/zod";

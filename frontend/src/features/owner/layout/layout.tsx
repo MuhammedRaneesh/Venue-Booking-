@@ -1,194 +1,210 @@
-import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import type { RootState } from "@/store";
-import { logout } from "@/features/auth/slices/authSlice";
-import NotificationBell from "@/components/Notification";
-import { useUserLogoutMutation } from "@/api/authApi";
-import { api } from "@/api/baseApi";
-import { socket } from "@/services/socket";
+import { useEffect, useState } from "react"
+import { NavLink, Outlet, useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
 import {
-  LayoutDashboard,
-  CalendarDays,
   Building2,
-  Crown,
-  UserCircle2,
-  LogOut,
+  CalendarDays,
   Home,
+  LayoutDashboard,
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Search,
+  UserCircle2,
   UserRound,
-} from "lucide-react";
+} from "lucide-react"
+import type { RootState } from "@/store"
+import { logout } from "@/features/auth/slices/authSlice"
+import { useUserLogoutMutation } from "@/features/auth/authApi"
+import { api } from "@/api/baseApi"
+import { socket } from "@/services/socket"
+import { useGetOwnerVenuesQuery } from "@/features/owner/ownerApi"
+import { Button } from "@/components/ui/button"
+import OwnerNotificationDropdown from "@/features/owner/components/OwnerNotificationDropdown"
 
 const navItems = [
   { title: "Dashboard", url: "/owner", icon: LayoutDashboard },
   { title: "Bookings", url: "/owner/booking", icon: CalendarDays },
   { title: "Venues", url: "/owner/venues", icon: Building2 },
   { title: "Profile", url: "/owner/profile", icon: UserRound },
-];
+]
 
 function OwnerLayout() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const dispatch = useDispatch();
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [collapsed, setCollapsed] = useState(false)
+  const [selectedVenue, setSelectedVenue] = useState("all")
 
-  const user = useSelector((state: RootState) => state.auth.user);
-  const [userLogout] = useUserLogoutMutation();
+  const user = useSelector((state: RootState) => state.auth.user)
+  const [userLogout] = useUserLogoutMutation()
+  const { data: venueData } = useGetOwnerVenuesQuery({ page: 1, limit: 50 })
+
+  const venues = venueData?.venue || []
+
+  useEffect(() => {
+    if (selectedVenue !== "all" && !venues.some((venue) => venue._id === selectedVenue)) {
+      setSelectedVenue("all")
+    }
+  }, [selectedVenue, venues])
 
   const handleLogout = async () => {
     try {
-      await userLogout().unwrap();
+      await userLogout().unwrap()
     } catch (error) {
-      console.error("Logout request failed:", error);
+      console.error("Logout request failed:", error)
     } finally {
-      dispatch(logout());
-      dispatch(api.util.resetApiState());
-      socket.disconnect();
-      navigate("/login");
+      dispatch(logout())
+      dispatch(api.util.resetApiState())
+      socket.disconnect()
+      navigate("/login")
     }
-  };
+  }
 
-
-  const currentTitle = navItems.find((item) => {
-    if (item.url === "/owner") {
-      return location.pathname === "/owner";
-    }
-    return location.pathname.startsWith(item.url);
-  })?.title || "Owner Console";
+  const initials = (user?.userName || "Owner")
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase()
 
   return (
-    <div className="flex h-screen w-screen bg-[#FDFDFD] overflow-hidden antialiased">
-
-      <aside className="w-[260px] h-full border-r border-[#F3EFE9] bg-[#FCFBF9] flex flex-col shrink-0 select-none">
-
-
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-[#F3EFE9]/40">
-          <div className="w-8 h-8 rounded-xl bg-[#C29F47] flex items-center justify-center shadow-xs shrink-0">
-            <Crown className="w-4 h-4 text-white" />
-          </div>
-          <div>
-            <h1 className="text-[15px] font-bold text-[#2B1343] leading-tight tracking-tight">
-              BookMyVenue
-            </h1>
-            <p className="text-[11px] text-[#5F5665] font-semibold tracking-wider uppercase mt-0.5 opacity-80">
-              Owner Console
-            </p>
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto py-4">
-          <p className="px-6 text-[10px] font-bold uppercase tracking-widest text-[#5F5665]/70 mb-2">
-            Management
-          </p>
-
-          <nav className="flex flex-col gap-1 px-3">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.title}
-                to={item.url}
-                end={item.url === "/owner"}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-xl py-3 px-4 text-[14px] font-medium transition-all duration-200 group ${isActive
-                    ? "bg-[#F5EFE4] text-[#C29F47] font-bold shadow-2xs"
-                    : "text-[#5F5665] hover:bg-[#F9F6F0] hover:text-[#2B1343]"
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <item.icon
-                      className={`w-[18px] h-[18px] shrink-0 transition-transform duration-200 group-hover:scale-105 ${isActive ? "text-[#C29F47]" : "text-[#5F5665] group-hover:text-[#2B1343]"
-                        }`}
-                    />
-                    <span>{item.title}</span>
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-
-        <div className="mt-auto border-t border-[#F3EFE9] bg-[#FCFBF9] p-4">
-          <div
-            className="flex items-center gap-3 bg-white border border-[#F3EFE9]/60 p-3 rounded-xl mb-3 shadow-2xs cursor-pointer hover:border-[#C29F47]/40 hover:shadow-md transition-all duration-200 group"
-            onClick={() => navigate("/owner/profile")}
-            title="View your profile"
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] [font-family:Inter,system-ui,sans-serif]">
+      <aside
+        className={`fixed inset-y-0 left-0 z-30 flex flex-col border-r border-[#0F172A] bg-[#1E293B] transition-[width] duration-200 max-lg:w-[72px] ${
+          collapsed ? "lg:w-[72px]" : "lg:w-[240px]"
+        }`}
+      >
+        <div className="flex h-16 items-center justify-between border-b border-white/10 px-4">
+          <button
+            type="button"
+            onClick={() => navigate("/owner")}
+            className="min-w-0 text-left text-white"
+            aria-label="BookMyVenue dashboard"
           >
-            {user?.profileImage ? (
-              <img src={user.profileImage} alt={user.userName} className="w-9 h-9 rounded-xl object-cover shrink-0" />
-            ) : (
-              <div className="w-9 h-9 rounded-xl bg-[#F5EFE4] flex items-center justify-center shrink-0 group-hover:bg-[#C29F47]/20 transition-colors">
-                <UserCircle2 className="w-5 h-5 text-[#C29F47]" />
-              </div>
+            <span className="block text-base font-semibold tracking-tight max-lg:hidden">
+              {collapsed ? "BMV" : "BookMyVenue"}
+            </span>
+            <span className="hidden text-xs font-medium text-[#F8FAFC] max-lg:block">BMV</span>
+            {!collapsed && (
+              <span className="block text-xs font-medium text-[#F8FAFC] max-lg:hidden">
+                Owner Portal
+              </span>
             )}
-            <div className="min-w-0 overflow-hidden flex-1">
-              <p className="text-xs font-bold text-[#2B1343] truncate">
-                {user?.userName || "Venue Owner"}
-              </p>
-              <p className="text-[11px] text-[#5F5665] font-medium truncate mt-0.5">
-                {user?.email || "owner@gmail.com"}
-              </p>
-            </div>
-            <UserRound className="w-3.5 h-3.5 text-[#C29F47]/60 shrink-0 group-hover:text-[#C29F47] transition-colors" />
-          </div>
+          </button>
 
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="hidden rounded-[6px] text-white hover:bg-white/10 hover:text-white lg:inline-flex"
+            onClick={() => setCollapsed((value) => !value)}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+          </Button>
+        </div>
+
+        <nav className="flex-1 space-y-1 px-3 py-4">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.title}
+              to={item.url}
+              end={item.url === "/owner"}
+              className={({ isActive }) =>
+                `flex h-10 items-center gap-3 rounded-[6px] border-l-[3px] px-3 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "border-l-[#0F766E] bg-white/10 text-white"
+                    : "border-l-transparent text-white/70 hover:bg-white/5 hover:text-white/90"
+                } ${collapsed ? "lg:justify-center lg:px-0" : ""} max-lg:justify-center max-lg:px-0`
+              }
+              title={item.title}
+            >
+              <item.icon className="h-5 w-5 shrink-0" />
+              <span className={`${collapsed ? "lg:hidden" : ""} max-lg:hidden`}>
+                {item.title}
+              </span>
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="border-t border-white/10 p-3">
+          <Button
+            type="button"
+            variant="ghost"
+            className={`mb-2 h-10 w-full justify-start gap-3 rounded-[6px] px-3 text-white/70 hover:bg-white/10 hover:text-white/90 ${
+              collapsed ? "lg:justify-center lg:px-0" : ""
+            } max-lg:justify-center max-lg:px-0`}
             onClick={() => navigate("/")}
-            className="w-full flex items-center gap-3 rounded-xl py-2.5 px-4 text-xs font-bold text-[#5F5665] hover:bg-[#F9F6F0] hover:text-[#2B1343] border border-transparent transition-all duration-150 mb-1"
           >
-            <Home className="w-4 h-4 shrink-0" />
-            <span>Go to Home</span>
-          </button>
+            <Home className="h-5 w-5" />
+            <span className={`${collapsed ? "lg:hidden" : ""} max-lg:hidden`}>Home</span>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            className={`h-10 w-full justify-start gap-3 rounded-[6px] px-3 text-white/70 hover:bg-white/10 hover:text-white/90 ${
+              collapsed ? "lg:justify-center lg:px-0" : ""
+            } max-lg:justify-center max-lg:px-0`}
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 rounded-xl py-2.5 px-4 text-xs font-bold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 transition-all duration-150"
           >
-            <LogOut className="w-4 h-4 shrink-0" />
-            <span>Logout Account</span>
-          </button>
+            <LogOut className="h-5 w-5" />
+            <span className={`${collapsed ? "lg:hidden" : ""} max-lg:hidden`}>Logout</span>
+          </Button>
         </div>
       </aside>
 
+      <div
+        className={`min-h-screen transition-[padding] duration-200 max-lg:pl-[72px] ${
+          collapsed ? "lg:pl-[72px]" : "lg:pl-[240px]"
+        }`}
+      >
+        <header className="sticky top-0 z-20 flex h-20 items-center justify-between gap-4 border-b border-[#E2E8F0] bg-white/80 px-4 backdrop-blur-md md:px-8 transition-all">
+          <div className="flex flex-1 items-center gap-6">
+            <h1 className="hidden font-[EB_Garamond,serif] text-2xl font-semibold text-[#0F172A] lg:block">
+              Welcome Back, {user?.userName?.split(" ")[0] || "Owner"} 👋
+            </h1>
+            <div className="relative w-full max-w-md">
+              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#64748B]" />
+              <input 
+                type="text" 
+                placeholder="Search venues or bookings..." 
+                className="w-full rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] py-2.5 pl-10 pr-4 text-sm text-[#0F172A] outline-none transition-all focus:border-[#0F766E] focus:ring-1 focus:ring-[#0F766E]"
+              />
+            </div>
+          </div>
 
-      <main className="flex-1 h-full overflow-hidden flex flex-col bg-[#FDFDFD]">
+          <div className="ml-auto flex min-w-0 items-center gap-4">
 
+            <OwnerNotificationDropdown />
 
-        <header className="h-16 border-b border-[#F3EFE9] bg-white flex items-center justify-between px-8 shrink-0 shadow-2xs">
-          <h2 className="text-base font-bold text-[#2B1343] tracking-tight transition-all">
-            {currentTitle}
-          </h2>
-
-          <div className="flex items-center gap-3">
-            <NotificationBell />
-
-            <button
-              onClick={() => navigate("/owner/profile")}
-              title="My Profile"
-              className="flex items-center gap-2.5 group rounded-2xl px-3 py-1.5 hover:bg-[#F5EFE4] border border-transparent hover:border-[#EADFCB] transition-all duration-200"
-            >
-              <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold text-[#2B1343] leading-tight">{user?.userName || "Owner"}</p>
-                <p className="text-[10px] text-[#5F5665] font-medium">Venue Owner</p>
+            <div className="flex items-center gap-3 pl-4 border-l border-[#E2E8F0]">
+              <div className="hidden text-right md:block">
+                <p className="text-sm font-bold text-[#0F172A]">{user?.userName || "Owner Profile"}</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#64748B]">Owner Account</p>
               </div>
-              {user?.profileImage ? (
-                <img src={user.profileImage} alt={user.userName} className="w-9 h-9 rounded-xl object-cover ring-2 ring-[#F3EFE9] group-hover:ring-[#C29F47]/40 transition-all duration-200 shrink-0" />
-              ) : (
-                <div className="w-9 h-9 rounded-xl bg-[#F5EFE4] border border-[#EADFCB] flex items-center justify-center shrink-0 group-hover:bg-[#C29F47]/20 group-hover:border-[#C29F47]/40 transition-all duration-200">
-                  <UserCircle2 className="w-5 h-5 text-[#C29F47]" />
-                </div>
-              )}
-            </button>
+              <button
+                type="button"
+                onClick={() => navigate("/owner/profile")}
+                className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-[#0F766E] text-sm font-semibold text-white ring-2 ring-transparent transition-all hover:ring-[#0D9488]/50 hover:shadow-md"
+                aria-label="Owner profile"
+              >
+                {user?.profileImage ? (
+                  <img src={user.profileImage} alt={user.userName} className="h-full w-full object-cover" />
+                ) : (
+                  initials || <UserCircle2 className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-8 max-w-7xl mx-auto w-full min-h-full flex flex-col">
-            <Outlet />
-          </div>
-        </div>
-      </main>
+        <main className="min-h-[calc(100vh-80px)] bg-[#F8FAFC] p-4 md:p-8">
+          <Outlet />
+        </main>
+      </div>
     </div>
-  );
+  )
 }
 
-export default OwnerLayout;
+export default OwnerLayout

@@ -1,4 +1,4 @@
-import { api } from "./baseApi";
+import { api } from "@/api/baseApi";
 
 export const wishlistApi = api.injectEndpoints({
   endpoints: (builder) => ({

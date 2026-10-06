@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "@/store"
 import { logout } from "@/features/auth/slices/authSlice"
 import NotificationBell from "@/components/Notification"
-import { useUserLogoutMutation } from "@/api/authApi"
+import { useUserLogoutMutation } from "@/features/auth/authApi"
 import { api } from "@/api/baseApi"
 import { socket } from "@/services/socket"
 import {
@@ -17,11 +17,13 @@ import {
     UserCircle2,
     ShieldCheck,
     UserRound,
+    Tags,
 } from "lucide-react"
 
 const navItems = [
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
     { to: "/admin/users", label: "Users", icon: Users },
+    { to: "/admin/categories", label: "Categories", icon: Tags },
     { to: "/admin/venues", label: "Venues", icon: Building2 },
     { to: "/admin/applications", label: "Applications", icon: FileText },
     { to: "/admin/bookings", label: "Bookings", icon: CalendarCheck },
@@ -57,10 +59,9 @@ export default function AdminLayout() {
     return (
         <div className="flex h-screen w-screen bg-[#FDFDFD] overflow-hidden antialiased">
 
-            {/* ── SIDEBAR ── */}
             <aside className="w-[260px] h-full border-r border-[#F3EFE9] bg-[#FCFBF9] flex flex-col shrink-0 select-none">
 
-                {/* Brand */}
+
                 <div className="flex items-center gap-3 px-6 py-5 border-b border-[#F3EFE9]/40">
                     <div className="w-8 h-8 rounded-xl bg-[#C29F47] flex items-center justify-center shadow-xs shrink-0">
                         <ShieldCheck className="w-4 h-4 text-white" />

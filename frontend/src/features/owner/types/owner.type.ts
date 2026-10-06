@@ -257,3 +257,48 @@ export interface getVenueOwnerQuery {
     limit? : number;
     page? : number
 }
+
+export type OwnerDashboardChartPeriod = "month" | "year" | "all";
+
+export interface OwnerDashboardChartPoint {
+    date: string;
+    bookings: number;
+    earnings: number;
+    totalAmount?: number;
+    revenue?: number;
+}
+
+export interface OwnerDashboardChartResponse {
+    success: boolean;
+    data: OwnerDashboardChartPoint[];
+}
+
+export interface OwnerDashboardRecentBooking {
+    _id: string;
+    bookingDate: string;
+    bookingStatus: string;
+    paymentStatus?: string;
+    totalAmount?: number;
+    amountPaid?: number;
+    createdAt?: string;
+    user?: {
+        userName?: string;
+        email?: string;
+    } | null;
+    venue?: {
+        venueName?: string;
+    } | null;
+}
+
+export interface OwnerDashboardSummaryResponse {
+    success: boolean;
+    totalVenues?: number;
+    activeVenues?: number;
+    inactiveVenues?: number;
+    totalBookings?: number;
+    pendingBookings?: number;
+    totalEarnings?: number;
+    recentBookings?: OwnerDashboardRecentBooking[];
+    data?: Record<string, any>;
+}
+

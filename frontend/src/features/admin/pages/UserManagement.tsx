@@ -4,7 +4,7 @@ import {
     useGetAdminUsersQuery,
     useToggleUserStatusMutation,
     useGetUserDetailQuery
-} from "../../../api/adminApi"
+} from "@/features/admin/adminApi"
 import {
     Search, ChevronLeft, ChevronRight,
     X, CheckCircle, XCircle, Users, Shield

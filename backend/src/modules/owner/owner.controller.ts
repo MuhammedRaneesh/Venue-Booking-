@@ -1,7 +1,8 @@
 import { Request, Response } from "express"
-import { ownerOnboarding, getOwnerBooking, updateBookingStatus, getVenueOwner, getDashboard, getOwnerProfile } from "./owner.service.js"
+import {getDashboardChart ,  ownerOnboarding, getOwnerBooking, updateBookingStatus, getVenueOwner, getDashboard, getOwnerProfile } from "./owner.service.js"
 import { catchAsync } from "../../utils/catchAsync.js"
 import { AppError } from "../../utils/AppError.js"
+
 
 export const ownerOnboardingHandler = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?._id
@@ -29,7 +30,7 @@ export const ownerGetBookingHandler = catchAsync(async (req: Request, res: Respo
 
 export const updateBookingStatusHandler = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?._id!
-    const result = await updateBookingStatus(userId, req.validatedBody)
+    const result = await updateBookingStatus(userId, req.body)
     res.status(200).json({
         success: true,
         message: "status updated succesfully"
@@ -70,3 +71,10 @@ export const getOwnerProfileHandler = catchAsync(async (req: Request, res: Respo
         data: result
     })
 })
+
+export const getDashboardChartHandler = catchAsync(async (req  :Request , res : Response ) => {
+    const ownerId = req.user?._id!;
+    const { period } = req.validatedQuery
+    const data = await getDashboardChart(ownerId, period);
+    res.status(200).json({ success: true, data });
+});

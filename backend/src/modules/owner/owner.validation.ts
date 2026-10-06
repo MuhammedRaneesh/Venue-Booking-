@@ -43,6 +43,11 @@ export const getVenueSchema = z.object({
 export const cancellationReasonSchema = z.object({
     cancellationReason : z.string().trim()
 })
+
+export const getDashboardChartSchema = z.object({
+    period: z.enum(["month", "year", "all"]).optional().default("month"),
+});
+
 export type OwnerApplicationSchema = z.infer<typeof ownerApplicationSchema>;
 export type OwnerBookingGet = z.infer<typeof ownerGetBooking>
 export type UpdateBookingStatus = z.infer<typeof updateBookingStatusSchema>

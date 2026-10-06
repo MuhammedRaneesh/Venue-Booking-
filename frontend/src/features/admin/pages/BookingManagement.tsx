@@ -5,7 +5,7 @@ import { format } from "date-fns"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ChevronLeft, ChevronRight, X, CalendarIcon } from "lucide-react"
-import { useAdminGetBookingQuery } from "@/api/adminApi"
+import { useAdminGetBookingQuery } from "@/features/admin/adminApi"
 
 const GOLD = "#D4AF37"
 

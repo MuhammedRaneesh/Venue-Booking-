@@ -1,5 +1,15 @@
 import { api } from "@/api/baseApi";
-import { ResponseApplication, ApplicationFormData, ResponseVenueAdd, GetVenue, UpdateVenue, getVenueOwnerQuery } from "@/features/owner/types/owner.type";
+import {
+    ResponseApplication,
+    ApplicationFormData,
+    ResponseVenueAdd,
+    GetVenue,
+    UpdateVenue,
+    getVenueOwnerQuery,
+    OwnerDashboardChartPeriod,
+    OwnerDashboardChartResponse,
+    OwnerDashboardSummaryResponse,
+} from "@/features/owner/types/owner.type";
 export const OwnerApi = api.injectEndpoints({
     endpoints: (builder) => ({
         ApplicationForm: builder.mutation<ResponseApplication, ApplicationFormData>({
@@ -57,9 +67,20 @@ export const OwnerApi = api.injectEndpoints({
                 }
             }
         }),
-        getOwnerDashboard: builder.query({
+        getOwnerDashboardSummary: builder.query<OwnerDashboardSummaryResponse, Record<string, never> | void>({
             query: () => ({
-                url: "/owner/dashboard"
+                url: "/owner/dashboard/summary"
+            })
+        }),
+        getOwnerDashboard: builder.query<OwnerDashboardSummaryResponse, Record<string, never> | void>({
+            query: () => ({
+                url: "/owner/dashboard/summary"
+            })
+        }),
+        getOwnerDashboardChart: builder.query<OwnerDashboardChartResponse, { period?: OwnerDashboardChartPeriod } | void>({
+            query: (params) => ({
+                url: "/owner/dashboard/chart",
+                params: params?.period ? { period: params.period } : undefined
             })
         }),
         getOwnerProfile: builder.query({
@@ -71,5 +92,5 @@ export const OwnerApi = api.injectEndpoints({
 })
 
 export const { useApplicationFormMutation, useAddVenueApiMutation, useGetVenueByIdQuery, useUpdateVenueMutation, useGetBookingUpdateQuery, useUpdateBookingStatusMutation,
-    useGetOwnerVenuesQuery, useGetOwnerDashboardQuery , useGetOwnerProfileQuery
+    useGetOwnerVenuesQuery, useGetOwnerDashboardSummaryQuery, useGetOwnerDashboardQuery, useGetOwnerDashboardChartQuery, useGetOwnerProfileQuery
 } = OwnerApi;

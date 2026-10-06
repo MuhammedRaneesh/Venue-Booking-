@@ -1,4 +1,4 @@
-import { api } from "../api/baseApi"
+import { api } from "@/api/baseApi"
 import { AdminGetUser, AdminGetVenueOwner, AdminGetBooking , AdminGetVenuesParams ,AdminVenueStatusPayload } from "@/features/admin/types/adminType"
 
 export const dashboardApi = api.injectEndpoints({

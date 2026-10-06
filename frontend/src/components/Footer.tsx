@@ -2,7 +2,6 @@ import { Link } from "react-router-dom"
 import {
   Globe,
   Heart,
-  MapPin,
   Tag,
 } from "lucide-react"
 
@@ -34,11 +33,8 @@ function Footer() {
         <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.9fr_1fr]">
           <div className="space-y-3">
             <Link to="/" className="inline-flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#C9A84C]/15">
-                <MapPin size={20} className="text-[#C9A84C]" fill="#C9A84C" />
-              </span>
-              <span className="font-[EB_Garamond,serif] text-xl font-semibold text-[#1c1b1b]">
-                BookMy<span className="text-[#C9A84C]">Venue</span>
+              <span className="font-sans text-2xl font-bold text-[#1c1b1b]">
+                Venuo
               </span>
             </Link>
 
@@ -49,7 +45,7 @@ function Footer() {
 
           {footerLinks.map((group) => (
             <div key={group.title}>
-              <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#2e0052]">
+              <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#1c1b1b]">
                 {group.title}
               </h3>
               <ul className="mt-3 space-y-2">
@@ -57,7 +53,7 @@ function Footer() {
                   <li key={link.label}>
                     <Link
                       to={link.to}
-                      className="text-sm font-medium leading-5 text-[#4c4451] transition-colors hover:text-[#C9A84C]"
+                      className="text-sm font-medium leading-5 text-[#4c4451] transition-colors hover:text-brand-accent"
                     >
                       {link.label}
                     </Link>
@@ -72,21 +68,21 @@ function Footer() {
               <a
                 href="https://www.instagram.com"
                 aria-label="Website"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e8e0d0] bg-white text-[#2e0052] transition hover:border-[#C9A84C] hover:text-[#C9A84C]"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e8e0d0] bg-white text-[#1c1b1b] transition hover:border-brand-accent hover:text-brand-accent"
               >
                 <Globe size={17} />
               </a>
               <Link
                 to="/wishlist"
                 aria-label="Wishlist"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e8e0d0] bg-white text-[#2e0052] transition hover:border-[#C9A84C] hover:text-[#C9A84C]"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e8e0d0] bg-white text-[#1c1b1b] transition hover:border-brand-accent hover:text-brand-accent"
               >
                 <Heart size={17} />
               </Link>
               <Link
                 to="/register"
                 aria-label="List your venue"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e8e0d0] bg-white text-[#2e0052] transition hover:border-[#C9A84C] hover:text-[#C9A84C]"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e8e0d0] bg-white text-[#1c1b1b] transition hover:border-brand-accent hover:text-brand-accent"
               >
                 <Tag size={17} />
               </Link>
@@ -95,15 +91,15 @@ function Footer() {
         </div>
 
         <div className="mt-6 flex flex-col gap-3 border-t border-[#e8e0d0] pt-4 text-xs font-medium text-[#7d7483] sm:flex-row sm:items-center sm:justify-between">
-          <p>Copyright 2026 BookMyVenue. All rights reserved.</p>
+          <p>Copyright 2026 Venuo. All rights reserved.</p>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
-            <Link to="/venues" className="hover:text-[#C9A84C]">
+            <Link to="/venues" className="hover:text-brand-accent">
               Find Venues
             </Link>
-            <Link to="/login" className="hover:text-[#C9A84C]">
+            <Link to="/login" className="hover:text-brand-accent">
               Sign In
             </Link>
-            <Link to="/register" className="hover:text-[#C9A84C]">
+            <Link to="/register" className="hover:text-brand-accent">
               Become an Owner
             </Link>
           </div>

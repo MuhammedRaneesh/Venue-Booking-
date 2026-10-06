@@ -1,4 +1,4 @@
-import { useMyBookingQuery, useCreatePaymentOrderMutation, useVerifyPaymentMutation } from "@/api/bookingApi";
+import { useMyBookingQuery, useCreatePaymentOrderMutation, useVerifyPaymentMutation } from "@/features/booking/bookingApi";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +11,7 @@ import logo from "../../../assets/ChatGPT Image Jun 26, 2026, 10_19_46 AM.png"
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { toast } from "sonner";
-import { useCancelBookingMutation } from "@/api/bookingApi";
+import { useCancelBookingMutation } from "@/features/booking/bookingApi";
 import { useState } from "react";
 function MyBookingsPage() {
 

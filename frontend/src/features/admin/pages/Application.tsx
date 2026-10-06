@@ -5,7 +5,7 @@ import {
     useAdminGetVenueOwnerApplicationQuery,
     useAdminOwnerApplicationDetailQuery,
     useAdminOwnerApplicationUpdateMutation
-} from "@/api/adminApi"
+} from "@/features/admin/adminApi"
 import {
     Search, X, ChevronLeft, ChevronRight,
     CheckCircle, XCircle, Building2, MapPin,

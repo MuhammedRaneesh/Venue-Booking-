@@ -1,8 +1,7 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store";
-import { useGetOwnerProfileQuery, useGetOwnerDashboardQuery } from "@/api/ownerApi";
-import {
-  UserCircle2,
+import { useGetOwnerProfileQuery, useGetOwnerDashboardQuery } from "@/features/owner/ownerApi";
+import {UserCircle2,
   Building2,
   Phone,
   MapPin,

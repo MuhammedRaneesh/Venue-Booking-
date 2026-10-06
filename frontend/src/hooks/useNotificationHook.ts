@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux"
 import { socket } from "@/services/socket"
 import { api } from "@/api/baseApi"
 import {useGetNotificationsQuery,useGetUnreadCountQuery,useMarkAsReadMutation,useMarkAllAsReadMutation,useDeleteNotificationMutation,useClearAllNotificationsMutation
-} from "@/api/notificationApi"
+} from "@/features/owner/notificationApi"
 
 export const useNotifications = () => {
     const dispatch = useDispatch()

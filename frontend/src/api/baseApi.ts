@@ -50,7 +50,8 @@ export const api = createApi({
     "Users",
     "OwnerApplications",
     "Bookings",
-    "Notifications"
+    "Notifications",
+    "Categories"
   ],
   endpoints: () => ({}),
 });

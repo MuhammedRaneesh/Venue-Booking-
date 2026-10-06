@@ -21,7 +21,7 @@ export const BookingHandler = catchAsync(async (req: Request, res: Response) => 
             message: 'userNotfound'
         })
     }
-    const result = await BookingVenue(userId, req.validatedBody)
+    const result = await BookingVenue(userId, req.body)
     res.status(201).json({
         success: true,
         message: "booking added ",
@@ -44,7 +44,8 @@ export const userBookingHandler = catchAsync(async (req: Request, res: Response)
 })
 
 export const createPaymentBookingHandler = catchAsync(async (req: Request, res: Response) => {
-    const bookingId = req.body.bookingId as string
+    console.log(req.body)
+    const bookingId = req .body.bookingId as string
     const result = await createPaymentBooking(bookingId)
     res.status(200).json({
         success: true,
@@ -54,7 +55,7 @@ export const createPaymentBookingHandler = catchAsync(async (req: Request, res: 
 })
 
 export const verifyPaymentHandler = catchAsync(async (req: Request, res: Response) => {
-    const result = await verifyPaymentRazorpay(req.validatedBody)
+    const result = await verifyPaymentRazorpay(req.body)
     res.status(200).json({
         success: true,
         data: result

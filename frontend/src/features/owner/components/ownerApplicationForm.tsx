@@ -6,7 +6,7 @@ import {
     FileText, CalendarDays, Lock, Send
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useApplicationFormMutation } from '@/api/ownerApi';
+import { useApplicationFormMutation } from '@/features/owner/ownerApi';
 import { OwnerApplicationSchema, ownerApplicationSchema } from '../validators/ownerValidation';
 import image from "../../../assets/image.jpg.png"
 

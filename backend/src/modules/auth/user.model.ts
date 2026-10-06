@@ -16,8 +16,8 @@ export interface IUser {
 }
 
 export interface AuthUser {
-    userId: string;
-    role: string
+    userId: string ;
+    role: string ;
 }
 
 export type userRole = "user" | "venue_owner" | "admin"

@@ -1,4 +1,4 @@
-import { api } from "./baseApi";
+import { api } from "@/api/baseApi";
 import { GetVenue, VenueQueryParams } from "@/features/owner/types/owner.type";
 
 export const VenueApi = api.injectEndpoints({

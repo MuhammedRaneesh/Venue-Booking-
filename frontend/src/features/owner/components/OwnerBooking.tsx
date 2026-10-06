@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGetBookingUpdateQuery, useUpdateBookingStatusMutation } from "../../../api/ownerApi"
+import { useGetBookingUpdateQuery, useUpdateBookingStatusMutation } from "@/features/owner/ownerApi"
 import { X, Eye, ChevronLeft, ChevronRight, Calendar, CreditCard, Clock, Building } from 'lucide-react';
 import type { OwnerBookingItem, Pagination } from '../types/owner.type';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useGetOwnerVenuesQuery } from "../../../api/ownerApi";
+import { useGetOwnerVenuesQuery } from "@/features/owner/ownerApi";
 import { useNavigate } from "react-router-dom";
 import {
   Plus,

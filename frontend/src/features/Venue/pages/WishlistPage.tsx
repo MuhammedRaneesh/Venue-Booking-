@@ -1,4 +1,4 @@
-import { useGetWishlistQuery, useRemoveWishlistMutation } from "@/api/wishlistApi";
+import { useGetWishlistQuery, useRemoveWishlistMutation } from "@/features/Venue/wishlistApi";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";

@@ -2,9 +2,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useState } from "react";
-import { useGetVenueDetailsQuery } from "@/api/venueApi";
-import { useGetAvailabilityQuery } from "@/api/bookingApi";
-import { useGetWishlistQuery, useAddWishlistMutation, useRemoveWishlistMutation } from "@/api/wishlistApi";
+import { useGetVenueDetailsQuery } from "@/features/Venue/venueApi";
+import { useGetAvailabilityQuery } from "@/features/booking/bookingApi";
+import { useGetWishlistQuery, useAddWishlistMutation, useRemoveWishlistMutation } from "@/features/Venue/wishlistApi";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {

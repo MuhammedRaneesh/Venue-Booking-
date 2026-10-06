@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import VenueCard from "../components/VenueCard";
-import { useGetVenueQuery } from "@/api/venueApi";
+import { useGetVenueQuery } from "@/features/Venue/venueApi";
 import { VenueQueryParams } from "../../owner/types/owner.type";
 import { VenueCardProps } from "../types/venue.type";
 import Navbar from "@/components/Navbar";

@@ -6,7 +6,7 @@ import {
     useGetAdminVenueDetailQuery,
     useUpdateAdminVenueStatusMutation,
     useToggleAdminVenueActiveMutation
-} from "@/api/adminApi"
+} from "@/features/admin/adminApi"
 import {
     Search, X, ChevronLeft, ChevronRight,
     CheckCircle, XCircle, Eye, MapPin, Users,

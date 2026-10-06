@@ -22,3 +22,5 @@ const createUploader = (folder: string) => {
 export const uploadAvatar = createUploader("bookmyvenue/avatars");
 
 export const uploadVenueImages = createUploader("bookmyvenue/venues");
+
+export const uploadCategoryImage = createUploader("bookmyvenue/categories");

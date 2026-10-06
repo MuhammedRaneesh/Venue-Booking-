@@ -2,7 +2,7 @@ import { useCallback, useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { useAddVenueApiMutation } from "@/api/ownerApi";
+import { useAddVenueApiMutation } from "@/features/owner/ownerApi";
 import { useLocationSearch } from "@/hooks/useLocationSearch";
 import type { ApiErrorResponse, LatLngTuple, LocationSuggestion, VenueFormValues } from "../types/owner.type";
 import { createVenueFormSchema, type VenueAddSchema } from "../validators/ownerValidation";

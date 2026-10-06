@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useAdminDashboardQuery } from "../../../api/adminApi"
+import { useAdminDashboardQuery } from "@/features/admin/adminApi"
 import { Users, Building2, CalendarCheck, IndianRupee, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 

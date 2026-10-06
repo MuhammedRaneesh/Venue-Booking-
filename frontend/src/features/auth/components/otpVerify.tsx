@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { RefreshCw, Loader2, ArrowLeft } from 'lucide-react'
 import { otpSchema } from '../validators/authValidation'
-import { useVerifyOtpMutation, useResendOtpMutation } from "../../../api/authApi"
+import { useVerifyOtpMutation, useResendOtpMutation } from "@/features/auth/authApi"
 import { setCredentials } from '../slices/authSlice'
 import type { OtpSchema } from '../validators/authValidation'
 
