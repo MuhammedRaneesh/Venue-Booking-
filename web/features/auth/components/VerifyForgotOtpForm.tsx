@@ -3,35 +3,34 @@
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import gsap from "gsap";
-import { useVerifyOtpMutation, useResendOtpMutation } from "../hooks/useRegister";
-import { otpSchema } from "../schemas/otp.schema";
+import { useVerifyForgotOtpMutation, useForgotPasswordMutation } from "../hooks/useLogin";
+import { verifyForgotOtpSchema } from "../schemas/verify-forgot-otp.schema";
 
-interface VerifyOtpFormProps {
+interface VerifyForgotOtpFormProps {
   email: string;
   onBack?: () => void;
-  onSuccess?: () => void;
 }
 
-export function VerifyOtpForm({ email, onBack, onSuccess }: VerifyOtpFormProps) {
+export function VerifyForgotOtpForm({ email, onBack }: VerifyForgotOtpFormProps) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
-  const successCardRef = useRef<HTMLDivElement>(null);
   const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);
   const [error, setError] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isNavigatingBack, setIsNavigatingBack] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(60);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(180);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [isNavigatingBack, setIsNavigatingBack] = useState(false);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const verifyOtpMutation = useVerifyOtpMutation();
-  const resendOtpMutation = useResendOtpMutation();
+  const verifyOtpMutation = useVerifyForgotOtpMutation();
+  const resendOtpMutation = useForgotPasswordMutation();
 
   useEffect(() => {
-    router.prefetch("/register");
+    router.prefetch("/forgot-password");
+    router.prefetch("/reset-password");
   }, [router]);
 
   useEffect(() => {
@@ -66,37 +65,6 @@ export function VerifyOtpForm({ email, onBack, onSuccess }: VerifyOtpFormProps) 
       }
     };
   }, []);
-
-  useEffect(() => {
-    if (isSuccess && successCardRef.current) {
-      gsap.fromTo(
-        successCardRef.current,
-        { scale: 0.92, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(1.5)" }
-      );
-    }
-  }, [isSuccess]);
-
-  const handleBack = () => {
-    if (isNavigatingBack) return;
-    setIsNavigatingBack(true);
-
-    if (containerRef.current) {
-      gsap.to(containerRef.current, {
-        x: 20,
-        opacity: 0,
-        scale: 0.98,
-        duration: 0.22,
-        ease: "power2.inOut",
-      });
-    }
-
-    if (onBack) {
-      onBack();
-    } else {
-      router.push("/register");
-    }
-  };
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -140,33 +108,38 @@ export function VerifyOtpForm({ email, onBack, onSuccess }: VerifyOtpFormProps) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const otpNumber = otpDigits.join("");
+    if (isNavigating) return;
+    setError(null);
 
-    const validation = otpSchema.safeParse({
-      email: email.trim().toLowerCase(),
-      otpNumber,
-    });
+    const otpNumber = otpDigits.join("");
+    const validation = verifyForgotOtpSchema.safeParse({ otpNumber });
 
     if (!validation.success) {
-      setError(validation.error.issues[0]?.message || "Invalid OTP code");
+      setError(validation.error.issues[0]?.message || "Please enter all 6 digits");
       return;
     }
 
     verifyOtpMutation.mutate(
       {
         email: email.trim().toLowerCase(),
-        otpNumber,
+        otp: otpNumber,
       },
       {
         onSuccess: () => {
-          setIsSuccess(true);
-          if (onSuccess) {
-            onSuccess();
-          } else {
-            setTimeout(() => {
-              router.push("/");
-            }, 1800);
+          setIsNavigating(true);
+          const targetUrl = `/reset-password?email=${encodeURIComponent(email)}`;
+
+          if (containerRef.current) {
+            gsap.to(containerRef.current, {
+              x: -20,
+              opacity: 0,
+              scale: 0.98,
+              duration: 0.22,
+              ease: "power2.inOut",
+            });
           }
+
+          router.push(targetUrl);
         },
         onError: (err) => {
           setError(err.message || "Invalid or expired OTP code.");
@@ -184,9 +157,9 @@ export function VerifyOtpForm({ email, onBack, onSuccess }: VerifyOtpFormProps) 
     resendOtpMutation.mutate(
       { email: email.trim().toLowerCase() },
       {
-        onSuccess: (data) => {
-          setResendCooldown(60);
-          setResendMessage(data.result?.message || "New verification code sent!");
+        onSuccess: () => {
+          setResendCooldown(180);
+          setResendMessage("A new verification code has been dispatched to your email.");
         },
         onError: (err) => {
           setError(err.message || "Failed to resend code. Please try again.");
@@ -195,27 +168,32 @@ export function VerifyOtpForm({ email, onBack, onSuccess }: VerifyOtpFormProps) 
     );
   };
 
-  if (isSuccess) {
-    return (
-      <div ref={successCardRef} className="w-full text-center py-4">
-        <div className="w-13 h-13 bg-[#FFF5F5] text-[#FA5A55] rounded-full flex items-center justify-center mx-auto mb-3">
-          <CheckCircle2 className="w-7 h-7" />
-        </div>
-        <h2 className="font-serif text-2xl font-medium text-[#171717] mb-1.5">
-          Account Verified!
-        </h2>
-        <p className="text-xs sm:text-[13px] text-[#737373] max-w-xs mx-auto mb-4">
-          Your account has been created successfully. Redirecting you to home...
-        </p>
-        <Link
-          href="/"
-          className="inline-flex items-center justify-center h-10 px-5 bg-[#FA5A55] hover:bg-[#E63E39] text-white text-xs font-medium rounded-lg transition-colors"
-        >
-          Go to Home
-        </Link>
-      </div>
-    );
-  }
+  const handleBack = () => {
+    if (isNavigatingBack) return;
+    setIsNavigatingBack(true);
+
+    if (containerRef.current) {
+      gsap.to(containerRef.current, {
+        x: 20,
+        opacity: 0,
+        scale: 0.98,
+        duration: 0.22,
+        ease: "power2.inOut",
+      });
+    }
+
+    if (onBack) {
+      onBack();
+    } else {
+      router.push(`/forgot-password?email=${encodeURIComponent(email)}`);
+    }
+  };
+
+  const formatCooldown = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
 
   return (
     <div ref={containerRef} className="w-full">
@@ -226,7 +204,7 @@ export function VerifyOtpForm({ email, onBack, onSuccess }: VerifyOtpFormProps) 
         className="group inline-flex items-center gap-1.5 text-xs text-[#737373] hover:text-[#171717] transition-colors mb-3.5 cursor-pointer disabled:opacity-50"
       >
         <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-150 group-hover:-translate-x-0.5" />
-        <span>Back to form</span>
+        <span>Back to forgot password</span>
       </button>
 
       <div>
@@ -241,25 +219,25 @@ export function VerifyOtpForm({ email, onBack, onSuccess }: VerifyOtpFormProps) 
       </div>
 
       <div className="mt-4 mb-4">
-        <h1 className="font-serif text-[22px] sm:text-[25px] font-medium tracking-tight text-[#171717]">
-          Verify your email
+        <h1 className="font-serif text-[24px] sm:text-[26px] font-medium tracking-tight text-[#171717] leading-tight">
+          Verify reset code
         </h1>
         <p className="mt-1 text-xs sm:text-[13px] text-[#737373] leading-relaxed">
-          We sent a 6-digit code to <span className="font-medium text-[#171717]">{email}</span>.
-          Enter it below to complete registration.
+          We sent a 6-digit code to <span className="font-medium text-[#171717]">{email || "your email"}</span>.
+          Enter it below to reset your password.
         </p>
       </div>
 
       {error && (
         <div className="flex items-start gap-2 p-2.5 mb-3 text-xs bg-red-50 border border-red-200 text-red-600 rounded-lg">
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
           <span>{error}</span>
         </div>
       )}
 
       {resendMessage && (
         <div className="flex items-start gap-2 p-2.5 mb-3 text-xs bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg">
-          <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+          <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
           <span>{resendMessage}</span>
         </div>
       )}
@@ -286,17 +264,17 @@ export function VerifyOtpForm({ email, onBack, onSuccess }: VerifyOtpFormProps) 
 
         <button
           type="submit"
-          disabled={verifyOtpMutation.isPending}
+          disabled={verifyOtpMutation.isPending || isNavigating}
           className="w-full h-11 flex items-center justify-center gap-2 bg-[#FA5A55] hover:bg-[#E63E39] active:scale-[0.99] text-white text-sm font-medium rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all duration-150 disabled:opacity-60 cursor-pointer"
         >
-          {verifyOtpMutation.isPending ? (
+          {verifyOtpMutation.isPending || isNavigating ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Verifying code...</span>
+              <span>{isNavigating ? "Redirecting..." : "Verifying code..."}</span>
             </>
           ) : (
             <>
-              <span>Complete registration</span>
+              <span>Verify code</span>
               <ArrowRight className="w-4 h-4" />
             </>
           )}
@@ -306,7 +284,7 @@ export function VerifyOtpForm({ email, onBack, onSuccess }: VerifyOtpFormProps) 
       <div className="mt-3.5 text-center text-xs text-[#737373]">
         Didn&apos;t receive code?{" "}
         {resendCooldown > 0 ? (
-          <span className="text-[#A3A3A3] font-medium">Resend in {resendCooldown}s</span>
+          <span className="text-[#A3A3A3] font-medium">Resend in {formatCooldown(resendCooldown)}</span>
         ) : (
           <button
             type="button"
@@ -322,4 +300,4 @@ export function VerifyOtpForm({ email, onBack, onSuccess }: VerifyOtpFormProps) 
   );
 }
 
-export default VerifyOtpForm;
+export default VerifyForgotOtpForm;

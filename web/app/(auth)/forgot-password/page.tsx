@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { RegisterForm } from "@/features/auth/components/RegisterForm";
+import { ForgotPasswordClient } from "./ForgotPasswordClient";
 
 export const metadata: Metadata = {
-  title: "Create your account | Venuo",
+  title: "Reset your password | Venuo",
   description:
-    "Join Venuo to discover and book extraordinary venues for weddings, meetings, dinners, and events.",
+    "Enter your email to receive password reset instructions for your Venuo account.",
   openGraph: {
-    title: "Create your account | Venuo",
+    title: "Reset your password | Venuo",
     description:
-      "Join Venuo to discover and book extraordinary venues for weddings, meetings, dinners, and events.",
+      "Enter your email to receive password reset instructions for your Venuo account.",
   },
 };
 
-function RegisterFallback() {
+function ForgotPasswordFallback() {
   return (
     <div className="w-full opacity-90">
       <div>
@@ -24,9 +24,9 @@ function RegisterFallback() {
           Find. Book. Celebrate.
         </p>
       </div>
-      <div className="mt-5 mb-4">
-        <h1 className="font-serif text-[26px] sm:text-[28px] font-medium tracking-tight text-[#171717] leading-tight">
-          Create an account
+      <div className="mt-4 mb-4">
+        <h1 className="font-serif text-[24px] sm:text-[26px] font-medium tracking-tight text-[#171717] leading-tight">
+          Reset your password
         </h1>
         <p className="mt-1 text-xs sm:text-[13px] text-[#737373] leading-relaxed">
           Loading...
@@ -36,10 +36,10 @@ function RegisterFallback() {
   );
 }
 
-export default function RegisterPage() {
+export default function ForgotPasswordPage() {
   return (
-    <Suspense fallback={<RegisterFallback />}>
-      <RegisterForm />
+    <Suspense fallback={<ForgotPasswordFallback />}>
+      <ForgotPasswordClient />
     </Suspense>
   );
 }

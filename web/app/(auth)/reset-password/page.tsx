@@ -1,19 +1,17 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { RegisterForm } from "@/features/auth/components/RegisterForm";
+import { ResetPasswordClient } from "./ResetPasswordClient";
 
 export const metadata: Metadata = {
-  title: "Create your account | Venuo",
-  description:
-    "Join Venuo to discover and book extraordinary venues for weddings, meetings, dinners, and events.",
+  title: "Set New Password | Venuo",
+  description: "Create a new password for your Venuo account.",
   openGraph: {
-    title: "Create your account | Venuo",
-    description:
-      "Join Venuo to discover and book extraordinary venues for weddings, meetings, dinners, and events.",
+    title: "Set New Password | Venuo",
+    description: "Create a new password for your Venuo account.",
   },
 };
 
-function RegisterFallback() {
+function ResetPasswordFallback() {
   return (
     <div className="w-full opacity-90">
       <div>
@@ -26,7 +24,7 @@ function RegisterFallback() {
       </div>
       <div className="mt-5 mb-4">
         <h1 className="font-serif text-[26px] sm:text-[28px] font-medium tracking-tight text-[#171717] leading-tight">
-          Create an account
+          Create new password
         </h1>
         <p className="mt-1 text-xs sm:text-[13px] text-[#737373] leading-relaxed">
           Loading...
@@ -36,10 +34,10 @@ function RegisterFallback() {
   );
 }
 
-export default function RegisterPage() {
+export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<RegisterFallback />}>
-      <RegisterForm />
+    <Suspense fallback={<ResetPasswordFallback />}>
+      <ResetPasswordClient />
     </Suspense>
   );
 }

@@ -48,3 +48,49 @@ export interface ResendOtpResponse {
     message: string;
   };
 }
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  user: User;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  success: boolean;
+  result?: {
+    message: string;
+  };
+  message?: string;
+}
+
+export interface VerifyForgotOtpPayload {
+  email: string;
+  otp: string;
+}
+
+export interface VerifyForgotOtpResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface ResetPasswordPayload {
+  email: string;
+  newPassword: string;
+}
+
+export interface ResetPasswordResponse {
+  success: boolean;
+  result?: {
+    message: string;
+  };
+  message?: string;
+}
+
