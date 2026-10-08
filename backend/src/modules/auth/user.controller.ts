@@ -153,7 +153,7 @@ export const googleCallbackHandler = catchAsync(async (req: Request, res: Respon
         maxAge: 15 * 60 * 1000
     })
     res.redirect(
-        `${process.env.FRONTEND_URL}/auth/google/success?token=${token}`
+        `${process.env.FRONTEND_URL}/google/success?token=${token}`
     )
 })
 

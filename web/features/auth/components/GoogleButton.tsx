@@ -1,11 +1,8 @@
 "use client";
 
-import React from "react";
-
 export function GoogleButton({ label = "Continue with Google" }: { label?: string }) {
   const handleGoogleSignIn = () => {
-    const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:7000/api";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7000/api";
     window.location.href = `${apiUrl}/auth/google`;
   };
 

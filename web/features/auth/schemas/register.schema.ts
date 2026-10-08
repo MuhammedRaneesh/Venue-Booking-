@@ -9,11 +9,7 @@ export const registerSchema = z.object({
     .trim()
     .min(3, "Full name must be at least 3 characters")
     .max(20, "Full name cannot exceed 20 characters"),
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .email("Please enter a valid email address")
+  email: z.email("Please enter a valid email address")
     .regex(
       STRICT_EMAIL_REGEX,
       "Email must end with a valid domain (e.g. .com, .in, .org)"
