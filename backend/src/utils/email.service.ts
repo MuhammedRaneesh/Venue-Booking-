@@ -106,9 +106,9 @@ function buildOtpHtml(otp: string): string {
     `)
 }
 
-function buildWelcomeHtml(userName: string): string {
+function buildWelcomeHtml(fullName: string): string {
     return layout(`
-        <h1>Welcome to BookMyVenue, ${userName}!</h1>
+        <h1>Welcome to BookMyVenue, ${fullName}!</h1>
         <p>Your account is officially verified. You can now explore, compare, and shortlist premium venues from one simple dashboard.</p>
 
         <div class="panel">
@@ -140,10 +140,10 @@ function buildForgotPasswordHtml(otp: string): string {
     `)
 }
 
-function buildBookingAcceptedHtml(userName: string, venueName: string): string {
+function buildBookingAcceptedHtml(fullName: string, venueName: string): string {
     return layout(`
         <h1>Your Booking is Approved!</h1>
-        <p>Great news, ${userName}! The venue owner has accepted your booking request for <span class="accent">${venueName}</span>.</p>
+        <p>Great news, ${fullName}! The venue owner has accepted your booking request for <span class="accent">${venueName}</span>.</p>
 
         <div class="panel">
             <p>Your slot is currently held for you. To confirm your booking and secure the venue, please complete your payment.</p>
@@ -157,14 +157,14 @@ function buildBookingAcceptedHtml(userName: string, venueName: string): string {
     `)
 }
 function buildBookingRejectedHtml(
-  userName: string,
+  fullName: string,
   venueName: string,
   reason?: string
 ): string {
   return layout(`
         <h1>Booking Request Declined</h1>
         <p>
-          Hello ${userName}, unfortunately your booking request for
+          Hello ${fullName}, unfortunately your booking request for
           <span class="accent">${venueName}</span> could not be approved by the venue owner.
         </p>
         <div class="panel">
@@ -206,12 +206,12 @@ export const sendOtpEmail = async (email: string, otp: string): Promise<void> =>
     }
 }
 
-export const sendWelcomeEmail = async (email: string, userName: string): Promise<void> => {
+export const sendWelcomeEmail = async (email: string, fullName: string): Promise<void> => {
     try {
         await sendBrevoEmail({
             to: email,
-            subject: `Welcome to BookMyVenue, ${userName}!`,
-            html: buildWelcomeHtml(userName),
+            subject: `Welcome to BookMyVenue, ${fullName}!`,
+            html: buildWelcomeHtml(fullName),
         })
     } catch (error) {
         console.error("Brevo welcome email error:", error)
@@ -232,24 +232,24 @@ export const sendForgotPasswordEmail = async (email: string, otp: string): Promi
     }
 }
 
-export const sendBookingAcceptedEmail = async (email: string, userName: string, venueName: string): Promise<void> => {
+export const sendBookingAcceptedEmail = async (email: string, fullName: string, venueName: string): Promise<void> => {
     try {
         await sendBrevoEmail({
             to: email,
             subject: `Your booking at ${venueName} is approved!`,
-            html: buildBookingAcceptedHtml(userName, venueName),
+            html: buildBookingAcceptedHtml(fullName, venueName),
         })
     } catch (error) {
         console.error("Brevo booking accepted email error:", error)
     }
 }
 
-export const sendBookingRejectedEmail = async (email: string, userName: string, venueName: string, reason?: string): Promise<void> => {
+export const sendBookingRejectedEmail = async (email: string, fullName: string, venueName: string, reason?: string): Promise<void> => {
     try {
         await sendBrevoEmail({
             to: email,
             subject: `Your booking at ${venueName} was declined`,
-            html: buildBookingRejectedHtml(userName, venueName, reason),
+            html: buildBookingRejectedHtml(fullName, venueName, reason),
         })
     } catch (error) {
         console.error("Brevo booking rejected email error:", error)

@@ -103,7 +103,7 @@ export const loginUser = async (email: string, password: string) => {
     return {
         user: {
             id: user._id,
-            userName: user.fullName,
+            fullName: user.fullName,
             email: user.email,
             role: user.role
         },

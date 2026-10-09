@@ -10,8 +10,10 @@ import { AppError } from "../../utils/AppError.js"
 import mongoose from "mongoose"
 export const ownerOnboarding = async (userId: string, data: OwnerApplicationSchema) => {
 
-    const user = await User.findById(userId).select(" ownerStatus email userName")
+    const user = await User.findById(userId).select("ownerStatus email fullName phoneNumber")
+
     if (!user) throw new AppError("user not found", 404)
+
     if (user.ownerStatus === "PENDING") {
         throw new AppError("You already have a pending application under review", 409)
     }
@@ -33,7 +35,9 @@ export const ownerOnboarding = async (userId: string, data: OwnerApplicationSche
     })
 
     await User.findByIdAndUpdate(userId, {
-        ownerStatus: "PENDING"
+        ownerStatus: "PENDING",
+        fullName: data.fullName,
+        phoneNumber: data.phoneNumber,
     })
 
     const admins = await User.find({ role: "admin", isActive: true }).select("_id").lean()
@@ -43,7 +47,7 @@ export const ownerOnboarding = async (userId: string, data: OwnerApplicationSche
             senderId: userId,
             type: "new_owner_application",
             title: "New Owner Application",
-            message: `${user.userName} submitted an owner application`,
+            message: `${data.fullName || user.fullName} submitted an owner application`,
             data: {
                 applicationId: ownerProfile._id.toString(),
                 userId,
@@ -53,7 +57,7 @@ export const ownerOnboarding = async (userId: string, data: OwnerApplicationSche
 
     return {
         message: "Application submitted successfully. We will review within 48 hours.",
-        OwnerProfile
+        ownerProfile
     }
 }
 
@@ -68,7 +72,7 @@ export const getOwnerBooking = async (ownerId: string, data: OwnerBookingGet) =>
         Booking.countDocuments({ ownerId }),
         Booking.find({ ownerId })
             .sort({ createdAt: -1 })
-            .populate("userId", "userName email phoneNumber")
+            .populate("userId", "fullName email phoneNumber")
             .populate(
                 "venueId",
                 "venueName photos category capacity pricing status"
@@ -129,11 +133,11 @@ export const updateBookingStatus = async (userId: string, data: UpdateBookingSta
         const notificationConfig = notificationConfigByStatus[status]
 
         if (status === "approved" && user?.email) {
-            await sendBookingAcceptedEmail(user.email, user.userName, venue.venueName);
+            await sendBookingAcceptedEmail(user.email, user.fullName, venue.venueName);
         }
 
         if (status === "rejected" && user?.email) {
-            await sendBookingRejectedEmail(user.email, user.userName, venue.venueName);
+            await sendBookingRejectedEmail(user.email, user.fullName, venue.venueName);
         }
 
         if (user && notificationConfig) {
@@ -214,7 +218,7 @@ export const getDashboard = async (ownerId: string) => {
 
     const [venues, bookings] = await Promise.all([
         Venue.find({ owner: ownerId }).lean(),
-        Booking.find({ ownerId }).populate("userId", "userName email").populate("venueId", "venueName").sort({ createdAt: -1 }).lean(),
+        Booking.find({ ownerId }).populate("userId", "fullName email").populate("venueId", "venueName").sort({ createdAt: -1 }).lean(),
     ]);
 
 
@@ -235,7 +239,7 @@ export const getDashboard = async (ownerId: string) => {
         totalAmount: b.totalAmount,
         amountPaid: b.amountPaid,
         createdAt: b.createdAt,
-        user: b.userId ? { userName: b.userId.userName, email: b.userId.email } : null,
+        user: b.userId ? { fullName: b.userId.fullName, email: b.userId.email } : null,
         venue: b.venueId ? { venueName: b.venueId.venueName } : null,
     }));
 
@@ -254,7 +258,7 @@ export const getDashboard = async (ownerId: string) => {
 
 export const getOwnerProfile = async (ownerId: string) => {
 
-    const profile = await OwnerProfile.findOne({ user: ownerId }).populate("user", "userName email profileImage createdAt")
+    const profile = await OwnerProfile.findOne({ user: ownerId }).populate("user", "fullName email profileImage createdAt")
     if (!profile) throw new AppError("Owner profile not found", 404)
 
     return profile

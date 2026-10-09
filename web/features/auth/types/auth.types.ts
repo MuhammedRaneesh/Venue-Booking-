@@ -9,6 +9,7 @@ export interface User {
   profileImage?: string;
   isVerified?: boolean;
   authProvider?: "local" | "google";
+  ownerStatus?: "NONE" | "PENDING" | "APPROVED" | "REJECTED";
   createdAt?: string;
   updatedAt?: string;
 }

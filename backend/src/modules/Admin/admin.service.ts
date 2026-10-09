@@ -118,7 +118,7 @@ export const getDashboardSummary = async (period: 'this_month' | 'this_year' | '
     const totalPlatformFees = b.totalPlatformFees[0]?.total ?? 0
 
     const recentBookings = await Booking.find(dateFilter)
-        .populate("userId", "userName email")
+        .populate("userId", "fullName email")
         .populate("venueId", "venueName")
         .sort({ createdAt: -1 })
         .limit(5)
@@ -160,7 +160,7 @@ export const getAllusers = async (data: AdminUserSchema) => {
     if (role) filter.role = role
     if (search) {
         filter.$or = [
-            { userName: { $regex: search, $options: "i", }, },
+            { fullName: { $regex: search, $options: "i", }, },
             { email: { $regex: search, $options: "i", }, },
         ];
     }
@@ -229,7 +229,7 @@ export const adminGetAllVenues = async (data: AdminGetAllVenue) => {
 
     const [totalCount, venues] = await Promise.all([
         Venue.countDocuments(filter),
-        Venue.find(filter).populate('owner', 'userName email profileImage').select('venueName category location.address status createdAt').sort({ createdAt: -1 }).skip(Skip)
+        Venue.find(filter).populate('owner', 'fullName email profileImage').select('venueName category location.address status createdAt').sort({ createdAt: -1 }).skip(Skip)
             .limit(Limit)
     ])
 
@@ -246,7 +246,7 @@ export const adminGetAllVenues = async (data: AdminGetAllVenue) => {
 }
 
 export const adminGetVenueDetail = async (venueId: string) => {
-    const venue = await Venue.findById(venueId).populate("owner", "userName email profileImage phoneNumber")
+    const venue = await Venue.findById(venueId).populate("owner", "fullName email profileImage phoneNumber")
     if (!venue) throw new AppError("venue not found", 404)
     return { venue }
 }
@@ -313,7 +313,7 @@ export const adminGetAllBookings = async (data: AdminGetBookingsQuery) => {
 
     const [totalCount, bookings] = await Promise.all([
         Booking.countDocuments(filter),
-        Booking.find(filter).populate('userId', 'userName email profileImage').populate('venueId', 'venueName location.address.city')
+        Booking.find(filter).populate('userId', 'fullName email profileImage').populate('venueId', 'venueName location.address.city')
             .select('-razorpayOrderId -razorpayPaymentId -razorpaySignature')
             .sort({ createdAt: -1 }).skip(Skip).limit(Limit)
     ])
@@ -344,7 +344,7 @@ export const adminGetOwnerApplications = async (data: AdminGetOwnerApplicationsQ
 
     if (search) {
         userFilter.$or = [
-            { userName: { $regex: search, $options: 'i' } },
+            { fullName: { $regex: search, $options: 'i' } },
             { email: { $regex: search, $options: 'i' } }
         ]
     }
@@ -363,7 +363,7 @@ export const adminGetOwnerApplications = async (data: AdminGetOwnerApplicationsQ
     const [totalCount, applications] = await Promise.all([
         OwnerProfile.countDocuments({ user: { $in: userIds } }),
         OwnerProfile.find(profileFilter)
-            .populate('user', 'userName email profileImage ownerStatus role isActive')
+            .populate('user', 'fullName email profileImage ownerStatus role isActive')
             .sort({ createdAt: -1 })
             .skip(Skip)
             .limit(Limit)
@@ -383,7 +383,7 @@ export const adminGetOwnerApplications = async (data: AdminGetOwnerApplicationsQ
 
 export const adminGetOwnerApplicationDetail = async (userId: string) => {
     const ownerProfile = await OwnerProfile.findOne({ user: userId })
-        .populate('user', 'userName email profileImage ownerStatus role createdAt')
+        .populate('user', 'fullName email profileImage ownerStatus role createdAt')
 
     if (!ownerProfile) throw new AppError('Application not found', 404)
 

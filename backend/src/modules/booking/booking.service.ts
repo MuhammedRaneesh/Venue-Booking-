@@ -170,7 +170,7 @@ export const BookingVenue = async (userId: string, data: CreateBooking) => {
     userId: venue.owner.toString(),
     title: "New Booking Request",
     senderId: userId,
-    message: `${user?.userName} submitted a booking request`,
+    message: `${user?.fullName} submitted a booking request`,
     type : "new_booking_request" ,
     data : {
       bookingId: newBooking._id.toString(),

@@ -12,7 +12,7 @@ export const updateUserProfile = async (userId: string, data: UpdateProfilePaylo
     const user = await User.findById(userId);
     if (!user) throw new AppError("User not found", 404);
 
-    if (data.userName) user.userName = data.userName;
+    if (data.fullName) user.fullName = data.fullName;
     if (data.phoneNumber) user.phoneNumber = data.phoneNumber;
     if (data.profileImage !== undefined) user.profileImage = data.profileImage;
 

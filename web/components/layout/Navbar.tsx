@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  ArrowUpRight,
   Menu,
   X,
+  ArrowUpRight,
   User as UserIcon,
+  LogOut,
+  Sparkles,
+  LayoutDashboard,
   Calendar,
   Heart,
-  LogOut,
-  LayoutDashboard,
-  Sparkles,
 } from "lucide-react";
 import { useCurrentUser, useLogoutMutation } from "@/features/auth/hooks/useAuth";
 
@@ -24,12 +24,12 @@ export function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const { data: authData, isLoading: isAuthLoading } = useCurrentUser();
+  const { data, isLoading: isAuthLoading } = useCurrentUser();
+  const user = data?.user;
   const logoutMutation = useLogoutMutation();
-  const user = authData?.user;
+
   const isOwner = user?.role === "venue_owner";
 
-  // Handle scroll to blend at top and show border on scroll
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 15);
@@ -39,7 +39,6 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -53,7 +52,6 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setDropdownOpen(false);
@@ -78,7 +76,7 @@ export function Navbar() {
   const listSpaceHref = isOwner
     ? "/owner"
     : user
-    ? "/owner/application"
+    ? "/onboarding/application"
     : "/list-space";
 
   return (
@@ -89,11 +87,8 @@ export function Navbar() {
           : "bg-background border-b border-transparent shadow-none"
       }`}
     >
-      {/* Aligned container matching the exact hero panel grid margin */}
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          
-          {/* Left Column: Brand Name */}
           <div className="flex items-center min-w-[150px] sm:min-w-[180px] shrink-0">
             <Link
               href="/"
@@ -104,7 +99,6 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Center Column: Navigation Links */}
           <nav className="hidden md:flex flex-1 items-center justify-center gap-6 lg:gap-8">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
@@ -124,16 +118,13 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Right Column: Actions */}
           <div className="hidden md:flex items-center justify-end min-w-[150px] sm:min-w-[180px] shrink-0 gap-3.5">
             {isAuthLoading ? (
-              // Loading Skeleton State: Prevents flash of "Sign in" on refresh
               <div className="flex items-center gap-3 animate-pulse" aria-hidden="true">
                 <div className="h-10 w-28 rounded-full bg-muted" />
                 <div className="w-10 h-10 rounded-full bg-muted" />
               </div>
             ) : user ? (
-              // Authenticated State: List Space Pill + Round Avatar Profile Button
               <div className="flex items-center gap-3">
                 <Link
                   href={listSpaceHref}
@@ -143,7 +134,6 @@ export function Navbar() {
                   <ArrowUpRight className="w-3.5 h-3.5 text-background/90 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
                 </Link>
 
-                {/* Round Profile Avatar Button */}
                 <div className="relative" ref={dropdownRef}>
                   <button
                     type="button"
@@ -167,7 +157,6 @@ export function Navbar() {
                     )}
                   </button>
 
-                  {/* Dropdown Menu */}
                   {dropdownOpen && (
                     <div className="absolute right-0 mt-2.5 w-60 bg-background rounded-2xl border border-border shadow-lg p-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                       <div className="px-3.5 py-3 rounded-xl bg-muted/60 border border-border/60 mb-1">
@@ -233,7 +222,6 @@ export function Navbar() {
                 </div>
               </div>
             ) : (
-              // Unauthenticated State
               <div className="flex items-center gap-3">
                 <Link
                   href="/login"
@@ -253,7 +241,6 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <div className="flex items-center gap-2 md:hidden">
             <button
               type="button"
@@ -271,7 +258,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background px-6 pt-4 pb-6 space-y-4 shadow-lg animate-in slide-in-from-top-2 duration-150">
           <nav className="flex flex-col space-y-1">
