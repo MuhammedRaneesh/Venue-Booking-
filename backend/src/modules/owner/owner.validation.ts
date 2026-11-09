@@ -8,7 +8,12 @@ export const ownerApplicationSchema = z.object({
     city: z.string().trim().min(2, "Enter your city").max(50, "City name is too long"),
     state: z.string().trim().min(2, "Enter your state").max(50, "State name is too long"),
     pincode: z.string().regex(/^\d{6}$/, "Pincode must be exactly 6 digits"),
-    gstNumber: z.string().trim().optional(),
+    gstNumber: z
+        .string()
+        .trim()
+        .transform(val => val.toUpperCase())
+        .refine(val => !val || val.length === 15, "GST number must be exactly 15 characters")
+        .optional(),
 })
 
 export const ownerGetBooking = z.object({

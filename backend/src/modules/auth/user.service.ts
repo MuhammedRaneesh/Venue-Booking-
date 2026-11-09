@@ -174,7 +174,11 @@ export const resetPassword = async (email: string, newPassword: string) => {
 
 export const googleLogin = async (userId: string) => {
     const user = await User.findById(userId)
-    if (!user || !user.isActive) throw new AppError("User not found or Account is deactivated", 403)
+    if (!user) throw new AppError("User not found", 404)
+    if (!user.isActive) throw new AppError("Your account has been deactivated. Please contact support.", 403)
+    if (!user.fullName) {
+        user.fullName = (user as any).userName || user.email.split("@")[0] || "User"
+    }
     const token = accessToken(String(user._id), user.role)
     const generateRefreshToken = refreshToken(String(user._id))
     user.refreshToken = generateRefreshToken

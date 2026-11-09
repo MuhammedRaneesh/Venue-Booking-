@@ -70,7 +70,7 @@ export function ApplicationPendingCard({ userEmail }: { userEmail?: string }) {
 
         <Link
           href="/venues"
-          className="h-9 px-4 rounded-full bg-muted hover:bg-neutral-200 text-foreground text-xs font-semibold inline-flex items-center gap-1.5 transition-colors"
+          className="h-9 px-5 rounded-full bg-muted hover:bg-neutral-200 text-foreground text-sm font-medium tracking-normal inline-flex items-center gap-2 shrink-0 whitespace-nowrap transition-colors"
         >
           <span>Explore venues</span>
           <ArrowRight className="w-3.5 h-3.5" />
@@ -106,7 +106,7 @@ export function ApplicationApprovedCard() {
         </div>
         <Link
           href="/owner"
-          className="h-9 px-5 rounded-full bg-coral-500 hover:bg-coral-600 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 shrink-0 shadow-xs transition-colors"
+          className="h-9 px-5 rounded-full bg-coral-500 hover:bg-coral-600 text-white text-sm font-medium tracking-normal inline-flex items-center justify-center gap-2 shrink-0 shadow-xs transition-colors whitespace-nowrap"
         >
           <span>Open Dashboard</span>
           <ArrowRight className="w-3.5 h-3.5" />

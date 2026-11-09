@@ -5,14 +5,14 @@ const redisClient = createClient({
     url: process.env.REDIS_URL ,
 })
 
-redisClient.on("error", (err) => {
-    console.log("redis connection error " , err)
-})
 
 redisClient.on("connect", () => {
     console.log("Redis connected successfully")
 })
 
+redisClient.on("error", (err) => {
+    console.log("redis connection error " , err)
+})
 
 const connectRedis = async () => {
     if (!redisClient.isOpen) {

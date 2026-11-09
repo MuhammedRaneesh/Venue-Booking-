@@ -26,8 +26,8 @@ export const createCategorySchema = z.object({
 });
 
 export const categoryQuerySchema = z.object({
-  search: z.string().trim().max(100).optional(),
-  status: z.enum(["active", "inactive"]).optional(),
+  search: z.string().trim().max(100).optional().transform(val => val === "" ? undefined : val),
+  status: z.preprocess(val => val === "" ? undefined : val, z.enum(["active", "inactive"]).optional()),
   page: z.coerce.number().int().min(1).optional(),
   limit: z.coerce.number().int().min(1).max(50).optional(),
 });

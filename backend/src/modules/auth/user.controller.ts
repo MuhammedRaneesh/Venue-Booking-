@@ -130,31 +130,38 @@ export const resetPasswordHandler = catchAsync(async (req: Request, res: Respons
 })
 
 export const googleCallbackHandler = catchAsync(async (req: Request, res: Response) => {
+    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:3000").trim()
     const googleUser = req.user as any
 
-    if (!googleUser) {
-        return res.redirect(`${process.env.FRONTEND_URL}/login?error=google_failed`)
+    if (!googleUser || !googleUser._id) {
+        return res.redirect(`${frontendUrl}/login?error=google_failed`)
     }
 
-    const { token, generateRefreshToken } = await googleLogin(
-        googleUser._id
-    )
+    try {
+        const { token, generateRefreshToken } = await googleLogin(
+            googleUser._id
+        )
 
-    res.cookie("refreshToken", generateRefreshToken, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
-        maxAge: 14 * 24 * 60 * 60 * 1000,
-    })
-    res.cookie("accessToken", token, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "none" : "lax",
-        maxAge: 15 * 60 * 1000
-    })
-    res.redirect(
-        `${process.env.FRONTEND_URL}/google/success?token=${token}`
-    )
+        res.cookie("refreshToken", generateRefreshToken, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            maxAge: 14 * 24 * 60 * 60 * 1000,
+        })
+        res.cookie("accessToken", token, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? "none" : "lax",
+            maxAge: 15 * 60 * 1000
+        })
+        return res.redirect(
+            `${frontendUrl}/google/success?token=${token}`
+        )
+    } catch (err: any) {
+        console.error("[Google OAuth] Error during googleLogin in controller:", err)
+        const errorMessage = encodeURIComponent(err?.message || "Login failed. Please try again.")
+        return res.redirect(`${frontendUrl}/login?error=${errorMessage}`)
+    }
 })
 
 export const getMeHandler = catchAsync(async (req: Request, res: Response) => {

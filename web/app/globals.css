@@ -20,6 +20,25 @@
   --coral-500: #fa5a55;
   --coral-600: #e63e39;
   --coral-700: #c22924;
+
+  /* Venuo Admin Pure Black Theme */
+  --admin-bg: #000000;
+  --admin-sidebar: #000000;
+  --admin-surface: #0a0a0a;
+  --admin-surface-hover: #141414;
+  --admin-text-primary: #F5F2EB;
+  --admin-text-secondary: #888888;
+  --admin-border: #1a1a1a;
+  --admin-border-subtle: #121212;
+  --admin-accent: #D6B77A;
+  --admin-accent-hover: #e0c58e;
+  --admin-accent-muted: rgba(214, 183, 122, 0.1);
+  --admin-accent-border: rgba(214, 183, 122, 0.25);
+
+  --admin-success: #65A982;
+  --admin-warning: #D9A441;
+  --admin-error: #D16B6B;
+  --admin-info: #78A6D0;
 }
 
 @theme inline {
@@ -40,6 +59,23 @@
   --color-coral-500: var(--coral-500);
   --color-coral-600: var(--coral-600);
   --color-coral-700: var(--coral-700);
+
+  --color-admin-bg: var(--admin-bg);
+  --color-admin-sidebar: var(--admin-sidebar);
+  --color-admin-surface: var(--admin-surface);
+  --color-admin-surface-hover: var(--admin-surface-hover);
+  --color-admin-text-primary: var(--admin-text-primary);
+  --color-admin-text-secondary: var(--admin-text-secondary);
+  --color-admin-border: var(--admin-border);
+  --color-admin-border-subtle: var(--admin-border-subtle);
+  --color-admin-accent: var(--admin-accent);
+  --color-admin-accent-hover: var(--admin-accent-hover);
+  --color-admin-accent-muted: var(--admin-accent-muted);
+  --color-admin-accent-border: var(--admin-accent-border);
+  --color-admin-success: var(--admin-success);
+  --color-admin-warning: var(--admin-warning);
+  --color-admin-error: var(--admin-error);
+  --color-admin-info: var(--admin-info);
 }
 
 body {

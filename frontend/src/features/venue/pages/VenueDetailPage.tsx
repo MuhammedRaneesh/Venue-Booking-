@@ -31,11 +31,9 @@ function VenueDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data, isLoading, isError, refetch } = useGetVenueDetailsQuery(id);
-
   const { data: wishlistData } = useGetWishlistQuery(undefined);
   const [addWishlist] = useAddWishlistMutation();
   const [removeWishlist] = useRemoveWishlistMutation();
-
   const isWishlisted = wishlistData?.data?.some((item: any) => item.venueId?._id === id);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [guestCount, setGuestCount] = useState("");

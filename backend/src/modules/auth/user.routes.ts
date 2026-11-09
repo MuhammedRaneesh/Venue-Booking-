@@ -23,8 +23,41 @@ router.post("/verify-forgot-otp", verifyForgotOtpHandler)
 router.post("/reset-password", resetPasswordHandler)
 
 // google auth
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }))
-router.get("/google/callback", passport.authenticate("google", { failureRedirect: `${process.env.FRONTEND_URL}/login?error=google_failed`, session: false }), googleCallbackHandler)
+router.get(
+  "/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    session: false,
+    accessType: "offline",
+    prompt: "select_account",
+  })
+);
+
+router.get("/google/callback", (req, res, next) => {
+  passport.authenticate("google", { session: false }, (err: any, user: any, info: any) => {
+    const frontendUrl = (process.env.FRONTEND_URL || "http://localhost:3000").trim();
+
+    if (err) {
+      console.error("[Google OAuth Callback] Authentication error:", err);
+      const isExpiredOrRedeemed =
+        err?.message?.includes("invalid_grant") ||
+        err?.message?.includes("Code was already redeemed");
+      const message = isExpiredOrRedeemed
+        ? "Google authorization expired or was already used. Please try signing in again."
+        : (err?.message || "Google authentication failed. Please try again.");
+      return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(message)}`);
+    }
+
+    if (!user) {
+      console.error("[Google OAuth Callback] No user returned from strategy:", info);
+      const message = info?.message || "Google sign-in was cancelled or failed.";
+      return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(message)}`);
+    }
+
+    req.user = user;
+    return googleCallbackHandler(req, res, next);
+  })(req, res, next);
+});
 
 // user details
 router.get("/me", protect, getMeHandler)

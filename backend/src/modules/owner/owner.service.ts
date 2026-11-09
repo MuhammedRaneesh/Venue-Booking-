@@ -8,6 +8,7 @@ import { createNotification, createNotificationsForUsers } from "../Notification
 import type { NotificationType } from "../Notification/Notification.type.js"
 import { AppError } from "../../utils/AppError.js"
 import mongoose from "mongoose"
+
 export const ownerOnboarding = async (userId: string, data: OwnerApplicationSchema) => {
 
     const user = await User.findById(userId).select("ownerStatus email fullName phoneNumber")

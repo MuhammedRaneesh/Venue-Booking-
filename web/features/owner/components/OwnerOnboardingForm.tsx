@@ -38,6 +38,7 @@ export function OwnerOnboardingForm({ user, rejected }: OwnerOnboardingFormProps
     handleSubmit,
     trigger,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<OwnerOnboardingInput>({
     resolver: zodResolver(ownerOnboardingSchema),
@@ -268,24 +269,35 @@ export function OwnerOnboardingForm({ user, rejected }: OwnerOnboardingFormProps
                 >
                   GST Number (GSTIN)
                 </label>
-                <span className="text-[11px] text-muted-foreground">Optional</span>
+                <span className="text-[11px] text-muted-foreground tabular-nums">
+                  {watch("gstNumber")?.length || 0}/15 characters (Optional)
+                </span>
               </div>
               <div className="relative">
                 <FileText className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   id="gstNumber"
                   type="text"
-                  placeholder="GSTIN (optional)"
-                  {...register("gstNumber")}
-                  className={`w-full pl-10 pr-4 py-2.5 bg-background border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-all placeholder:text-muted-foreground/60 uppercase ${
+                  maxLength={15}
+                  placeholder="15-character GSTIN (e.g. 29ABCDE1234F1Z5)"
+                  {...register("gstNumber", {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.toUpperCase();
+                    },
+                  })}
+                  className={`w-full pl-10 pr-4 py-2.5 bg-background border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-coral-500/20 focus:border-coral-500 transition-all placeholder:text-muted-foreground/60 uppercase font-mono tracking-wider ${
                     errors.gstNumber ? "border-red-400 bg-red-50/20" : "border-border"
                   }`}
                 />
               </div>
-              {errors.gstNumber && (
+              {errors.gstNumber ? (
                 <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
                   <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                   {errors.gstNumber.message}
+                </p>
+              ) : (
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Must be exactly 15 alphanumeric characters if registered for GST.
                 </p>
               )}
             </div>
@@ -399,7 +411,7 @@ export function OwnerOnboardingForm({ user, rejected }: OwnerOnboardingFormProps
             <button
               type="button"
               onClick={prevStep}
-              className="h-10 px-4 rounded-full border border-border hover:bg-muted text-foreground text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="h-10 px-5 rounded-full border border-border hover:bg-muted text-foreground text-sm font-medium tracking-normal inline-flex items-center gap-2 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
@@ -412,7 +424,7 @@ export function OwnerOnboardingForm({ user, rejected }: OwnerOnboardingFormProps
             <button
               type="button"
               onClick={nextStep}
-              className="h-10 px-6 rounded-full bg-foreground hover:bg-neutral-800 text-background text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="h-10 px-6 rounded-full bg-foreground hover:bg-neutral-800 text-background text-sm font-medium tracking-normal inline-flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
             >
               <span>Continue</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -421,7 +433,7 @@ export function OwnerOnboardingForm({ user, rejected }: OwnerOnboardingFormProps
             <button
               type="submit"
               disabled={isPending}
-              className="h-10 px-6 rounded-full bg-foreground hover:bg-neutral-800 disabled:opacity-60 disabled:cursor-not-allowed text-background text-xs font-semibold inline-flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              className="h-10 px-6 rounded-full bg-foreground hover:bg-neutral-800 disabled:opacity-60 disabled:cursor-not-allowed text-background text-sm font-medium tracking-normal inline-flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
             >
               {isPending ? (
                 <>

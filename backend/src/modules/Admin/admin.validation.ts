@@ -1,12 +1,15 @@
 import { z } from "zod"
 
 export const adminUserSchema = z.object({
-    search: z.string().trim().max(100).optional(),
+    search: z.string().trim().max(100).optional().transform(val => val === "" ? undefined : val),
     page: z.string().optional(),
     limit: z.string().optional(),
-    role: z.enum(["user", "venue_owner"]).optional(),
-    isActive: z.enum(["true", "false"]).optional().transform(val =>
-        val === undefined ? undefined : val === "true"
+    role: z.preprocess(val => (val === "" ? undefined : val), z.enum(["user", "venue_owner"]).optional()),
+    isActive: z.preprocess(
+        val => (val === "" ? undefined : val),
+        z.enum(["true", "false"]).optional().transform(val =>
+            val === undefined ? undefined : val === "true"
+        )
     ),
 })
 
@@ -26,6 +29,7 @@ export const adminVenueStatus = z.object({
 
 
 export const adminGetBookingsQuerySchema = z.object({
+    search: z.string().optional(),
     bookingStatus: z.enum(["pending", "approved", "rejected", "cancelled", "completed", "expired"]).optional(),
     paymentStatus: z.enum(["unpaid", "fully_paid", "refunded"]).optional(),
     startDate: z.string().optional().transform(val => val ? new Date(val) : undefined),

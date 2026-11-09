@@ -25,6 +25,8 @@ export function LoginForm() {
     const errorParam = searchParams.get("error");
     if (errorParam === "google_failed") {
       setApiError("Google sign-in was cancelled or failed. Please try again.");
+    } else if (errorParam) {
+      setApiError(decodeURIComponent(errorParam));
     }
   }, [searchParams]);
 

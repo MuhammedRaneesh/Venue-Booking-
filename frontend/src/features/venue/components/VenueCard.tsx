@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { VenueCardProps } from "../types/venue.type";
 
 
-function VenueCard({ id, venueName, image, location, capacity, pricePerDay }: VenueCardProps) {
+
+function VenueCard({ id, venueName, image, location, capacity, pricePerDay } : any) {
   
   console.log(image)
   return (
