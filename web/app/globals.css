@@ -1,25 +1,39 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-playfair);
+  /* Surfaces (warm instead of cool gray) */
+  --background: #fffaf7;
+  --foreground: #2b2523;
+  --card: #ffffff;
+  --card-foreground: #2b2523;
+  --muted: #f6efea;
+  --muted-foreground: #6b625d;
+  --border: #efe6e0;
+  --input: #e7dcd5;
+  --ring: #fa5a55;
 
-  --border: #e5e5e5;
-  --muted: #f7f7f6;
-  --muted-foreground: #737373;
+  /* Brand */
+  --primary: #d63631;            /* coral-600: buttons with white text */
+  --primary-foreground: #ffffff;
 
-  /* Venuo Warm Coral Brand Palette */
-  --coral-50: #fff5f5;
+  /* Status (never use coral for these) */
+  --success: #15803d;
+  --success-soft: #dcfce7;
+  --warning: #b45309;
+  --warning-soft: #fef3c7;
+  --destructive: #b91c1c;
+  --destructive-soft: #fee2e2;
+
+  /* Brand coral scale */
+  --coral-50:  #fff5f5;
   --coral-100: #ffe8e7;
   --coral-200: #ffd5d3;
   --coral-300: #fca8a4;
   --coral-400: #f87a74;
   --coral-500: #fa5a55;
-  --coral-600: #e63e39;
-  --coral-700: #c22924;
+  --coral-600: #d63631;
+  --coral-700: #b32722;
+  --coral-800: #8f1d19;
 
   /* Venuo Admin Pure Black Theme */
   --admin-bg: #000000;
@@ -44,21 +58,36 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-destructive: var(--destructive);
+  --color-destructive-soft: var(--destructive-soft);
+
+  --color-coral-50:  #fff5f5;
+  --color-coral-100: #ffe8e7;
+  --color-coral-200: #ffd5d3;
+  --color-coral-300: #fca8a4;
+  --color-coral-400: #f87a74;
+  --color-coral-500: #fa5a55;
+  --color-coral-600: #d63631;
+  --color-coral-700: #b32722;
+  --color-coral-800: #8f1d19;
+
   --font-sans: var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
   --font-serif: var(--font-playfair), Georgia, serif;
-
-  --color-coral-50: var(--coral-50);
-  --color-coral-100: var(--coral-100);
-  --color-coral-200: var(--coral-200);
-  --color-coral-300: var(--coral-300);
-  --color-coral-400: var(--coral-400);
-  --color-coral-500: var(--coral-500);
-  --color-coral-600: var(--coral-600);
-  --color-coral-700: var(--coral-700);
 
   --color-admin-bg: var(--admin-bg);
   --color-admin-sidebar: var(--admin-sidebar);

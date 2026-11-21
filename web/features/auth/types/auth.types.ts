@@ -2,7 +2,8 @@ export type UserRole = "user" | "venue_owner" | "admin";
 
 export interface User {
   _id: string;
-  fullName: string;
+  fullName?: string;
+  userName?: string;
   email: string;
   role: UserRole;
   phoneNumber?: string;
