@@ -114,7 +114,21 @@ export const venueQuerySchema = z.object({
     path: ["maxCapacity"],
 })
 
+export const getVenueSchema = z.object({
+    search: z.string().trim().max(100).optional(),
+    sort: z.enum([
+        "price_asc",
+        "price_desc",
+        "rating",
+        "newest",
+    ]).optional(),
+    page: z.string().optional(),
+    limit: z.string().optional(),
+})
+
+
 export const updateVenueSchema = createVenueSchema.partial()
 export type UpdateVenue = z.infer<typeof updateVenueSchema>
 export type VenueQuery = z.infer<typeof venueQuerySchema>
 export type CreateVenue = z.infer<typeof createVenueSchema>
+export type OwnerVenueGetSchema = z.infer<typeof getVenueSchema>

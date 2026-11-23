@@ -1,4 +1,4 @@
-import { getAllVenues, createVenue, updateVenue, ownerVenue, getvenueById } from "./venue.service.js";
+import { getAllVenues, createVenue, updateVenue, ownerVenue, getvenueById  , getVenueOwner} from "./venue.service.js";
 import { Request, Response } from "express";
 import { ownerVenueDelete } from "./venue.service.js";
 import { createVenueSchema, updateVenueSchema } from "./venue.validation.js";
@@ -110,5 +110,16 @@ export const getVenueByIdHandler = catchAsync(async (req: Request, res: Response
     res.status(200).json({
         success: true,
         venue
+    })
+})
+
+export const getVenueOwnerHandler = catchAsync(async (req: Request, res: Response) => {
+    const ownerId = req.user?._id!
+    const result = await getVenueOwner(ownerId, req.validatedQuery)
+    res.status(200).json({
+        success: true,
+        venue: result.venues,
+        totalCount: result.totalCount,
+        pagination: result.pagination
     })
 })

@@ -16,44 +16,31 @@ export const ownerApplicationSchema = z.object({
         .optional(),
 })
 
-export const ownerGetBooking = z.object({
-    page: z.string().optional(),
-    limit: z.string().optional(),
-})
-
-export const updateBookingStatusSchema = z.object({
-    bookingId: z.string(),
-    status: z.enum([
-        "pending",
-        "approved",
-        "rejected",
-        "cancelled",
-        "completed",
-        "expired",
-    ])
-})
-
-export const getVenueSchema = z.object({
-    search: z.string().trim().max(100).optional(),
-    sort: z.enum([
-        "price_asc",
-        "price_desc",
-        "rating",
-        "newest",
-    ]).optional(),
-    page: z.string().optional(),
-    limit: z.string().optional(),
-})
-
 export const cancellationReasonSchema = z.object({
-    cancellationReason : z.string().trim()
+    cancellationReason: z.string().trim()
 })
 
 export const getDashboardChartSchema = z.object({
     period: z.enum(["month", "year", "all"]).optional().default("month"),
 });
 
+const objectId = z.string().regex(/^[a-f\d]{24}$/i, "Invalid venueId")
+
+export const dashboardSummaryQuerySchema = z.object({
+    venueId: objectId.optional(),
+})
+
+export const dashboardRevenueQuerySchema = z.object({
+    venueId: objectId.optional(),
+    range: z.enum(["6m", "12m"]).default("6m"),
+})
+
+export const dashboardBreakdownQuerySchema = z.object({
+    venueId: objectId.optional(),
+    range: z.enum(["30d", "6m", "12m", "all"]).default("6m"),
+})
+
 export type OwnerApplicationSchema = z.infer<typeof ownerApplicationSchema>;
-export type OwnerBookingGet = z.infer<typeof ownerGetBooking>
-export type UpdateBookingStatus = z.infer<typeof updateBookingStatusSchema>
-export type OwnerVenueGetSchema = z.infer<typeof getVenueSchema>
+
+export { ownerGetBooking, updateBookingStatusSchema, type OwnerBookingGet, type UpdateBookingStatus } from "../booking/booking.validation.js";
+export { getVenueSchema, type OwnerVenueGetSchema } from "../venue/venue.validation.js";

@@ -42,16 +42,16 @@ app.use(cors({
 
 app.use(passport.initialize())
 
-app.use('/api/auth', authRoutes)
-app.use("/api/owner", ownerRoutes)
-app.use("/api", venueRoutes)
-app.use("/api/booking", bookingRoutes)
-app.use("/api/user/profile", userProfileRoutes)
-app.use("/api/", useWishlist)
-app.use("/api/admin", useAdminRoute)
-app.use("/api/notification", useNotification)
-app.use("/api/categories", categoryRoutes)
-app.use("/api/category", categoryRoutes)
+app.use('/api/auth', authRoutes);
+app.use("/api/owner", ownerRoutes);
+app.use("/api", venueRoutes);
+app.use("/api/booking", bookingRoutes);
+app.use("/api/user/profile", userProfileRoutes);
+app.use("/api/", useWishlist);
+app.use("/api/admin", useAdminRoute);
+app.use("/api/notification", useNotification);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/category", categoryRoutes);
 
 app.use(errorHandler)
 

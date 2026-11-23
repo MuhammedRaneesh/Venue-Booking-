@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAvailability, BookingVenue, userBooking, createPaymentBooking, verifyPaymentRazorpay, CancelBooking } from "./booking.service.js";
+import { getAvailability, BookingVenue, userBooking, createPaymentBooking, verifyPaymentRazorpay, CancelBooking , getOwnerBooking , updateBookingStatus} from "./booking.service.js";
 import { catchAsync } from "../../utils/catchAsync.js";
 
 export const bookingsAvailabilityHandler = catchAsync(async (req: Request, res: Response) => {
@@ -72,3 +72,27 @@ export const cancelBookingHandler = catchAsync(async (req: Request, res: Respons
         message: result.message
     })
 })
+
+
+// owners controllers 
+
+export const ownerGetBookingHandler = catchAsync(async (req: Request, res: Response) => {
+    const ownerId = req.user?._id!
+    const result = await getOwnerBooking(ownerId, req.validatedQuery)
+    res.status(200).json({
+        success: true,
+        booking: result.bookings,
+        totalcount: result.totalCount,
+        pagination: result.pagination
+    })
+})
+
+export const updateBookingStatusHandler = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?._id!
+    const result = await updateBookingStatus(userId, req.body)
+    res.status(200).json({
+        success: true,
+        message: "status updated succesfully"
+    })
+})
+

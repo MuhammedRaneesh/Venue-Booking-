@@ -1,4 +1,4 @@
-import { VenueQuery, CreateVenue, UpdateVenue } from "./venue.validation.js"
+import { VenueQuery, CreateVenue, UpdateVenue , OwnerVenueGetSchema } from "./venue.validation.js"
 import { Venue } from "./venue.schema.js"
 import { OwnerProfile } from "../owner/owner.schema.js"
 import { AppError } from "../../utils/AppError.js"
@@ -178,4 +178,60 @@ export const ownerVenueDelete = async (venueId: string, ownerId: string) => {
         returnDocument : "after",
     })
     return { message: "delete done" }
+}
+
+
+export const getVenueOwner = async (ownerId: string, data: OwnerVenueGetSchema) => {
+
+    const { search, sort, page, limit } = data;
+
+    const filter: Record<string, any> = {
+        owner: ownerId
+    };
+
+    if (search) {
+        filter.$or = [
+            { venueName: { $regex: search, $options: "i", }, },
+            { description: { $regex: search, $options: "i", }, },
+        ];
+    }
+
+    let sortOption: Record<string, 1 | -1> = { createdAt: -1 };
+    if (sort) {
+        switch (sort) {
+            case "price_asc":
+                sortOption = { "pricing.pricePerDay": 1 };
+                break;
+            case "price_desc":
+                sortOption = { "pricing.pricePerDay": -1 };
+                break;
+            case "rating":
+                sortOption = { averageRating: -1 };
+                break;
+            case "newest":
+                sortOption = { createdAt: -1 };
+                break;
+        }
+    }
+    const Page = Number(page) || 1;
+    const Limit = Number(limit) || 10;
+    const Skip = (Page - 1) * Limit;
+
+    const [totalCount, venues] = await Promise.all([
+        Venue.countDocuments({ owner: ownerId }),
+        Venue.find(filter).sort(sortOption as any).skip(Skip).limit(Limit)
+    ])
+
+    return {
+        venues,
+        totalCount,
+        pagination: {
+            currentPage: Page,
+            Limit,
+            totalPages: Math.ceil(totalCount / Limit),
+            hasNextPage: Page < Math.ceil(totalCount / Limit),
+            hasPreviousPage: Page > 1,
+        }
+    };
+
 }

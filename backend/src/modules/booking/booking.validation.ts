@@ -89,7 +89,26 @@ export const cancelBookingParamsSchema = z.object({
   id: z.string().min(1, "booking id is required"),
 });
 
-export const cancelBookingBodySchema = z.string().trim().min(1, "Cancellation reason is required");
+export const ownerGetBooking = z.object({
+    page: z.string().optional(),
+    limit: z.string().optional(),
+})
 
+
+export const updateBookingStatusSchema = z.object({
+    bookingId: z.string(),
+    status: z.enum([
+        "pending",
+        "approved",
+        "rejected",
+        "cancelled",
+        "completed",
+        "expired",
+    ])
+})
+
+export const cancelBookingBodySchema = z.string().trim().min(1, "Cancellation reason is required");
 export type VerifyPaymentSchema = z.infer<typeof verifyPaymentSchema>
 export type CreateBooking = z.infer<typeof createBookingSchema>;    
+export type OwnerBookingGet = z.infer<typeof ownerGetBooking>
+export type UpdateBookingStatus = z.infer<typeof updateBookingStatusSchema>

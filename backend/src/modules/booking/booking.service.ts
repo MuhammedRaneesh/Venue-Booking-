@@ -1,12 +1,13 @@
 import { Booking } from "./booking.schema.js";
 import { Venue } from "../venue/venue.schema.js";
-import { CreateBooking, VerifyPaymentSchema } from "./booking.validation.js";
+import { CreateBooking, VerifyPaymentSchema, OwnerBookingGet , UpdateBookingStatus } from "./booking.validation.js";
 import { User } from "../auth/user.schema.js";
 import razorpay from "../../config/Razorpay.js";
 import crypto from "crypto"
 import { createNotification } from "../Notification/Notification.service.js";
 import { AppError } from "../../utils/AppError.js";
-
+import { NotificationType } from "../Notification/Notification.type.js";
+import { sendBookingAcceptedEmail , sendBookingRejectedEmail } from "../../utils/email.service.js";
 export const getAvailability = async (venueId: string, date: string) => {
   const venue = await Venue.findById(venueId);
   if (!venue) {
@@ -77,7 +78,7 @@ export const BookingVenue = async (userId: string, data: CreateBooking) => {
   const { venueId, bookingDate, startTime, endTime, bookingType, guestCount, eventType, specialRequest, paymentType, phoneNumber } = data;
 
   const venue = await Venue.findById(venueId);
-  const user = await User.findByIdAndUpdate(userId, { phoneNumber: phoneNumber }, { returnDocument : "after" })
+  const user = await User.findByIdAndUpdate(userId, { phoneNumber: phoneNumber }, { returnDocument: "after" })
   if (!venue) {
     throw new AppError("Venue not found", 404);
   }
@@ -127,7 +128,7 @@ export const BookingVenue = async (userId: string, data: CreateBooking) => {
     const platformFee = Math.round(venueAmount * 0.08);
     totalAmount = venueAmount + platformFee;
     savedPlatformFee = platformFee;
-    savedOwnerPayout = venueAmount; 
+    savedOwnerPayout = venueAmount;
   } else {
     const existingBooking = await Booking.findOne({
       venueId,
@@ -171,8 +172,8 @@ export const BookingVenue = async (userId: string, data: CreateBooking) => {
     title: "New Booking Request",
     senderId: userId,
     message: `${user?.fullName} submitted a booking request`,
-    type : "new_booking_request" ,
-    data : {
+    type: "new_booking_request",
+    data: {
       bookingId: newBooking._id.toString(),
       venueId
     }
@@ -186,7 +187,7 @@ export const userBooking = async (userId: string) => {
 }
 
 export const createPaymentBooking = async (bookingId: string) => {
-  
+
   const booking = await Booking.findById(bookingId)
   if (!booking) throw new AppError("Booking not found", 404)
 
@@ -281,7 +282,7 @@ export const verifyPaymentRazorpay = async (data: VerifyPaymentSchema) => {
 export const CancelBooking = async (userId: string, bookingId: string, cancellationReason: string) => {
 
   const booking = await Booking.findById(bookingId)
-  
+
   if (!booking) throw new AppError("booking not found", 404)
 
   if (booking.userId.toString() !== userId) throw new AppError("Unauthorized", 403)
@@ -317,4 +318,102 @@ export const CancelBooking = async (userId: string, bookingId: string, cancellat
   return {
     message: "Booking cancelled successfully",
   };
+}
+
+
+export const getOwnerBooking = async (ownerId: string, data: OwnerBookingGet) => {
+
+  const { page, limit } = data
+
+  const Page = Number(page);
+  const Limit = Number(limit);
+  const Skip = (Page - 1) * Limit
+  const [totalCount, bookings] = await Promise.all([
+    Booking.countDocuments({ ownerId }),
+    Booking.find({ ownerId })
+      .sort({ createdAt: -1 })
+      .populate("userId", "fullName email phoneNumber")
+      .populate(
+        "venueId",
+        "venueName photos category capacity pricing status"
+      )
+      .skip(Skip)
+      .limit(Limit)
+  ]);
+  return {
+    bookings,
+    totalCount,
+    pagination: {
+      currentPage: Page,
+      Limit,
+      totalPages: Math.ceil(totalCount / Limit),
+      hasNextPage: Page < Math.ceil(totalCount / Limit),
+      hasPreviousPage: Page > 1
+    }
+
+  }
+}
+
+export const updateBookingStatus = async (userId: string, data: UpdateBookingStatus) => {
+
+  const { bookingId, status } = data
+
+  const booking = await Booking.findById(bookingId).populate("userId").populate("venueId", "venueName" );
+  console.log(booking)
+  if (!booking) throw new AppError("Booking not found", 404);
+  
+  const previousStatus = booking.bookingStatus;
+  booking.bookingStatus = status
+  await booking.save()
+
+  if (previousStatus !== status) {
+    const user = booking.userId as any
+    const venue = booking.venueId as any
+    const notificationConfigByStatus: Partial<Record<string, { type: NotificationType; title: string; message: string }>> = {
+      approved: {
+        type: "booking_approved",
+        title: "Booking Approved",
+        message: `Your booking for ${venue?.venueName || "the venue"} was approved`,
+      },
+      rejected: {
+        type: "booking_rejected",
+        title: "Booking Rejected",
+        message: `Your booking for ${venue?.venueName || "the venue"} was rejected`,
+      },
+      cancelled: {
+        type: "booking_cancelled",
+        title: "Booking Cancelled",
+        message: `Your booking for ${venue?.venueName || "the venue"} was cancelled`,
+      },
+      completed: {
+        type: "booking_completed",
+        title: "Booking Completed",
+        message: `Your booking for ${venue?.venueName || "the venue"} was marked as completed`,
+      },
+    }
+    const notificationConfig = notificationConfigByStatus[status]
+
+    if (status === "approved" && user?.email) {
+      await sendBookingAcceptedEmail(user.email, user.fullName, venue.venueName);
+    }
+
+    if (status === "rejected" && user?.email) {
+      await sendBookingRejectedEmail(user.email, user.fullName, venue.venueName);
+    }
+
+    if (user && notificationConfig) {
+      await createNotification({
+        userId: user._id.toString(),
+        senderId: userId,
+        type: notificationConfig.type,
+        title: notificationConfig.title,
+        message: notificationConfig.message,
+        data: {
+          bookingId: booking._id.toString(),
+          venueId: venue?._id?.toString(),
+          status,
+        },
+      })
+    }
+  }
 }

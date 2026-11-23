@@ -105,8 +105,19 @@ export function Navbar() {
 
   const isOwner = user?.role === "venue_owner";
   const isAdmin = user?.role === "admin";
-  const displayName: string = user?.userName || user?.email || "User";
-  const initials = displayName.slice(0, 2).toUpperCase();
+  const displayName: string =
+    user?.fullName ||
+    user?.userName ||
+    (user?.email ? user.email.split("@")[0] : "User");
+  const initials =
+    (user?.fullName || displayName)
+      .trim()
+      .split(/\s+/)
+      .map((w: string) => w[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "U";
 
   const { data: unreadCount = 0 } = useUnreadCount(Boolean(user));
   useNotificationSocket(user?._id);
@@ -262,12 +273,15 @@ export function Navbar() {
                   <button
                     type="button"
                     onClick={() => setDropdownOpen((prev) => !prev)}
-                    className="w-10 h-10 rounded-full border border-border hover:border-coral-300 focus:outline-hidden focus:ring-2 focus:ring-coral-500/40 transition-all flex items-center justify-center cursor-pointer shadow-xs overflow-hidden active:scale-95"
+                    className="h-10 pl-1 pr-2.5 rounded-full border border-border hover:border-coral-300 focus:outline-hidden focus:ring-2 focus:ring-coral-500/40 transition-all flex items-center gap-2 cursor-pointer shadow-xs overflow-hidden active:scale-95 bg-background"
                     aria-expanded={dropdownOpen}
                     aria-haspopup="menu"
                     aria-label="User account menu"
                   >
-                    {avatar("w-full h-full", "text-[13px]")}
+                    {avatar("w-8 h-8", "text-[12px]")}
+                    <span className="hidden sm:inline-block text-[13px] font-medium text-foreground max-w-[110px] truncate">
+                      {displayName.split(" ")[0]}
+                    </span>
                   </button>
 
                   {dropdownOpen && (
@@ -290,6 +304,11 @@ export function Navbar() {
                         {isAdmin && (
                           <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-coral-50 text-coral-700">
                             <ShieldCheck className="w-3 h-3" /> Admin
+                          </span>
+                        )}
+                        {!isOwner && !isAdmin && (
+                          <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-neutral-100 text-neutral-700 border border-neutral-200/60">
+                            <UserIcon className="w-3 h-3 text-neutral-500" /> Member
                           </span>
                         )}
                       </div>
